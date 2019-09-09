@@ -1,0 +1,36 @@
+.button{
+  -fx-background:#1AAB8A;
+  -fx-color:#fff;
+  -fx-border:none;
+  -fx-position:relative;
+  -fx-height:60px;
+  -fx-font-size:1.6em;
+  -fx-padding:0 2em;
+  -fx-cursor:pointer;
+  -fx-transition:800ms ease all;
+  -fx-outline:none;
+}
+.button:hover{
+  -fx-background:#fff;
+  -fx-color:#1AAB8A;
+}
+.button:before,button:after{
+  -fx-content:'';
+  -fx-position:absolute;
+  -fx-top:0;
+  -fx-right:0;
+  -fx-height:2px;
+  -fx-width:0;
+  -fx-background: #1AAB8A;
+  -fx-transition:400ms ease all;
+}
+.button:after{
+  -fx-right:inherit;
+  -fx-top:inherit;
+  -fx-left:0;
+  -fx-bottom:0;
+}
+.button:hover:before,button:hover:after{
+  -fx-width:100%;
+  -fx-transition:800ms ease all;
+}

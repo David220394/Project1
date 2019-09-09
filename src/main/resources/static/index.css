@@ -1,0 +1,5 @@
+.grid{
+-fx-background-image:url('cover.jpg');
+-fx-background-size:cover;
+-fx-background-repeat: no-repeat;
+}
