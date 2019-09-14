@@ -1,6 +1,8 @@
 package com.management.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -17,7 +19,7 @@ import com.calendarfx.model.Entry;
 
 @Entity
 @Table(name="CONSULTATION")
-public class Consultation extends Entry<Object> {
+public class Consultation {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -47,9 +49,17 @@ public class Consultation extends Entry<Object> {
 	@Column(name = "PAYMENT")
 	private int payment;	
 	
-	@ManyToOne
-	@JoinColumn(name="CONSULTATION")
-	private Location location;
+	private String title;
+	
+	private LocalDate startDate;
+	
+	private LocalTime startTime;
+	
+	private LocalDate endDate;
+	
+	private LocalTime endTime;
+	
+	private String location;
 	
 	@OneToMany(mappedBy = "consultation")
 	private List<ConsultationMedicine> consultationMedicines;
@@ -163,16 +173,55 @@ public class Consultation extends Entry<Object> {
 		this.patient = patient;
 	}
 
-	
-	public Location obtainLocation() {
+	public void setStartDate(LocalDate startDate) {
+		this.startDate = startDate;
+	}
+
+	public void setStartTime(LocalTime startTime) {
+		this.startTime = startTime;
+	}
+
+	public void setEndDate(LocalDate endDate) {
+		this.endDate = endDate;
+	}
+
+
+	public void setEndTime(LocalTime endTime) {
+		this.endTime = endTime;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getLocation() {
 		return location;
 	}
 
-	public void setLocation(Location location) {
+	public void setLocation(String location) {
 		this.location = location;
 	}
-	
-	
+
+	public LocalDate getStartDate() {
+		return startDate;
+	}
+
+	public LocalTime getStartTime() {
+		return startTime;
+	}
+
+	public LocalDate getEndDate() {
+		return endDate;
+	}
+
+	public LocalTime getEndTime() {
+		return endTime;
+	}
+
 
 	
 }

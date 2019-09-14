@@ -1,7 +1,10 @@
 package com.management.controller;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -10,6 +13,9 @@ import org.springframework.stereotype.Controller;
 import com.jfoenix.controls.JFXTextField;
 import com.management.config.StageManager;
 import com.management.controller.dto.AppointmentDTO;
+import com.management.entity.Patient;
+import com.management.service.PatientService;
+import com.management.utility.JFXAutocompleteTextTField;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,8 +31,11 @@ public class AddConsultationController  implements Initializable {
     @Autowired
     private static StageManager stageManager;
     
+    @Autowired
+    private PatientService patientService;
+    
     @FXML
-    private JFXTextField patient;
+    private JFXAutocompleteTextTField patient;
 
     @FXML
     private JFXTextField location;
@@ -80,8 +89,12 @@ public class AddConsultationController  implements Initializable {
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		// TODO Auto-generated method stub
-		
+		List<Patient> patients = patientService.findAll();
+		SortedSet<String> entries = new TreeSet<>();
+		for (Patient patient : patients) {
+			entries.add(patient.getFirstName() + " | " + patient.getLastName() + " | " + patient.getPhoneNumber());
+		}
+		patient.getEntries().addAll(entries);
 	}
 	
 	

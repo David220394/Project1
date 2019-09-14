@@ -74,7 +74,7 @@
                         </JFXTextField>
                      </children>
                   </HBox>
-                  <Button fx:id="btnSubmit" mnemonicParsing="false" style="-fx-background-color: #02030A;" text="Submit" textFill="WHITE" textOverrun="CENTER_ELLIPSIS">
+                  <Button fx:id="btnSubmit" onAction="#onSubmit" mnemonicParsing="false" style="-fx-background-color: #02030A;" text="Submit" textFill="WHITE" textOverrun="CENTER_ELLIPSIS">
                      <font>
                         <Font size="19.0" />
                      </font>
