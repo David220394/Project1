@@ -19,7 +19,7 @@ import com.calendarfx.model.Entry;
 
 @Entity
 @Table(name="CONSULTATION")
-public class Consultation {
+public class Consultation{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -46,6 +46,9 @@ public class Consultation {
 	@Column(name = "DIAGNOSIS")
 	private String diagnosis;
 	
+	@Column(name = "CHARGE")
+	private double charge;
+	
 	@Column(name = "PAYMENT")
 	private int payment;	
 	
@@ -59,7 +62,9 @@ public class Consultation {
 	
 	private LocalTime endTime;
 	
-	private String location;
+	@ManyToOne
+	@JoinColumn(name="CONSULTATION")
+	private Location location;
 	
 	@OneToMany(mappedBy = "consultation")
 	private List<ConsultationMedicine> consultationMedicines;
@@ -165,29 +170,20 @@ public class Consultation {
 		this.consultationMedicines = consultationMedicines;
 	}
 
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+
 	public Patient getPatient() {
 		return patient;
 	}
 
 	public void setPatient(Patient patient) {
 		this.patient = patient;
-	}
-
-	public void setStartDate(LocalDate startDate) {
-		this.startDate = startDate;
-	}
-
-	public void setStartTime(LocalTime startTime) {
-		this.startTime = startTime;
-	}
-
-	public void setEndDate(LocalDate endDate) {
-		this.endDate = endDate;
-	}
-
-
-	public void setEndTime(LocalTime endTime) {
-		this.endTime = endTime;
 	}
 
 	public String getTitle() {
@@ -198,30 +194,44 @@ public class Consultation {
 		this.title = title;
 	}
 
-	public String getLocation() {
-		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
 	public LocalDate getStartDate() {
 		return startDate;
+	}
+
+	public void setStartDate(LocalDate startDate) {
+		this.startDate = startDate;
 	}
 
 	public LocalTime getStartTime() {
 		return startTime;
 	}
 
+	public void setStartTime(LocalTime startTime) {
+		this.startTime = startTime;
+	}
+
 	public LocalDate getEndDate() {
 		return endDate;
+	}
+
+	public void setEndDate(LocalDate endDate) {
+		this.endDate = endDate;
 	}
 
 	public LocalTime getEndTime() {
 		return endTime;
 	}
 
+	public void setEndTime(LocalTime endTime) {
+		this.endTime = endTime;
+	}
 
+	public double getCharge() {
+		return charge;
+	}
+
+	public void setCharge(double charge) {
+		this.charge = charge;
+	}
 	
 }

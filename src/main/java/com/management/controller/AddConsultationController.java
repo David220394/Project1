@@ -1,6 +1,7 @@
 package com.management.controller;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.SortedSet;
@@ -53,9 +54,15 @@ public class AddConsultationController  implements Initializable {
     private Button btnSubmit;
     
     private AppointmentDTO dto;
+    
+    
 	
-	public void onSubmit(ActionEvent event) {
+	public AddConsultationController() {
+		super();
 		dto = new AppointmentDTO();
+	}
+
+	public void onSubmit(ActionEvent event) {
 		dto.setName(patient.getText());
 		dto.setLocation(location.getText());
 		dto.setFrom(from.getText());
@@ -74,9 +81,11 @@ public class AddConsultationController  implements Initializable {
         stage.close();
     }
 	
-	public void setTimes(String startTime, String stopTime) {
+	public void setTimes(String startTime, String stopTime, LocalDate startDate, LocalDate endDate) {
 		from.setText(startTime);
 		to.setText(stopTime);
+		dto.setStartDate(startDate);
+		dto.setEndDate(endDate);
 	}
 
 	public AppointmentDTO getDto() {
