@@ -283,7 +283,7 @@ public class PatientController implements Initializable {
 
 	}
 
-	class Patient extends RecursiveTreeObject<Patient> {
+	private class Patient extends RecursiveTreeObject<Patient> {
 		StringProperty firstName;
 		StringProperty lastName;
 		StringProperty age;

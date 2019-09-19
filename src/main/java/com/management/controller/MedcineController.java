@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.ResourceBundle;
 
+import org.springframework.stereotype.Controller;
+
 import com.jfoenix.controls.JFXTextField;
 import com.management.controller.dto.ConsultationMedicineDTO;
 
@@ -14,6 +16,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
 
+@Controller
 public class MedcineController  implements Initializable {
 
     @FXML

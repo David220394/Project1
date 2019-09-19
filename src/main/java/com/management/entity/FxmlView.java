@@ -26,15 +26,15 @@ public enum FxmlView {
             return "/template/addConsultationDialog.fxml";
         }
     },
-    MEDCINE {
+    MEDICINE {
         @Override
 		public String getTitle() {
-            return getStringFromResourceBundle("medcine.title");
+            return getStringFromResourceBundle("medicine.title");
         }
 
         @Override
 		public String getFxmlFile() {
-            return "/template/medcine.fxml";
+            return "/template/medicine.fxml";
         }
     },
     PROFILE {
