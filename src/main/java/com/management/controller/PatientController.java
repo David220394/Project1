@@ -11,6 +11,7 @@ import javax.management.Notification;
 
 import org.controlsfx.control.Notifications;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 
 import com.jfoenix.controls.JFXDatePicker;
@@ -21,6 +22,10 @@ import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.jfoenix.validation.NumberValidator;
 import com.jfoenix.validation.RequiredFieldValidator;
+import com.management.config.SpringFXMLLoader;
+import com.management.config.StageManager;
+import com.management.controller.dto.PatientDTO;
+import com.management.entity.FxmlView;
 import com.management.entity.Patient;
 import com.management.service.PatientService;
 import com.sun.deploy.uitoolkit.impl.fx.ui.FXConsole;
@@ -34,19 +39,29 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.util.Callback;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableColumn.CellDataFeatures;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.scene.control.TreeTableRow;
 
 @Controller
 public class PatientController implements Initializable {
 
+    @Lazy
+    @Autowired
+    private StageManager stageManager;
+	
 	@Autowired
 	private PatientService patientService;
 
@@ -87,6 +102,18 @@ public class PatientController implements Initializable {
 
 		final TreeItem<Patient> root = new RecursiveTreeItem<Patient>(patients, RecursiveTreeObject::getChildren);
 
+		patientTableView.setRowFactory( tv -> {
+		    TreeTableRow<Patient> row = new TreeTableRow<>();
+		    row.setOnMouseClicked(event -> {
+		        if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+		        	Patient rowData = row.getItem();
+		        	openProfilePage(rowData);
+		            System.out.println(rowData.firstName);
+		        }
+		    });
+		    return row ;
+		});
+		
 		patientTableView.setRoot(root);
 		patientTableView.setShowRoot(false);
 
@@ -107,6 +134,20 @@ public class PatientController implements Initializable {
 			}
 		});
 
+	}
+	
+	public void openProfilePage(Patient patient) {
+		SpringFXMLLoader loader = stageManager.getSpringFXMLLoader();
+		Parent parent = stageManager.getParentView(FxmlView.PROFILE);
+		PatientProfileController dialogController = loader.getLoader()
+				.<PatientProfileController>getController();
+		PatientDTO p = patientService.findByFirstNameAndLastName(patient.firstName.get(), patient.lastName.get());
+		dialogController.setPatient(p);
+		Scene scene = new Scene(parent);
+		Stage stage = new Stage();
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.setScene(scene);
+		stage.showAndWait();
 	}
 
 	private void inputFieldValidation() {

@@ -26,6 +26,39 @@ public enum FxmlView {
             return "/template/addConsultationDialog.fxml";
         }
     },
+    MEDCINE {
+        @Override
+		public String getTitle() {
+            return getStringFromResourceBundle("medcine.title");
+        }
+
+        @Override
+		public String getFxmlFile() {
+            return "/template/medcine.fxml";
+        }
+    },
+    PROFILE {
+        @Override
+		public String getTitle() {
+            return getStringFromResourceBundle("profile.title");
+        }
+
+        @Override
+		public String getFxmlFile() {
+            return "/template/profile.fxml";
+        }
+    },
+    CONSULTATION {
+        @Override
+		public String getTitle() {
+            return getStringFromResourceBundle("consultation.title");
+        }
+
+        @Override
+		public String getFxmlFile() {
+            return "/template/consultation.fxml";
+        }
+    },
     LIST {
         @Override
         public String getTitle() {

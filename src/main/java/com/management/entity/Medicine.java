@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name="MEDICINE")
 public class Medicine {
@@ -28,6 +30,7 @@ public class Medicine {
 	private MedicineEnum consumption;
 	
 	@OneToMany(mappedBy = "medicine")
+	@JsonIgnore
 	private List<ConsultationMedicine> consultationMedicines;
 
 	public Medicine() {

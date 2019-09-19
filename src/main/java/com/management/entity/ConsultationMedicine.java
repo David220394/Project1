@@ -27,16 +27,20 @@ public class ConsultationMedicine {
 	
 	@Column(name = "INTAKE_PER_DAY")
 	private int intakeTimes;
+	
+	@Column(name = "NO_OF_DAYS")
+	private int noOfDays;
 
 	public ConsultationMedicine() {
 		super();
 	}
 
-	public ConsultationMedicine(Consultation consultation, Medicine medicine, int intakeTimes) {
+	public ConsultationMedicine(Consultation consultation, Medicine medicine, int intakeTimes, int noOfDays) {
 		super();
 		this.consultation = consultation;
 		this.medicine = medicine;
 		this.intakeTimes = intakeTimes;
+		this.noOfDays = noOfDays;
 	}
 
 	public long getId() {
@@ -69,6 +73,14 @@ public class ConsultationMedicine {
 
 	public void setIntakeTimes(int intakeTimes) {
 		this.intakeTimes = intakeTimes;
+	}
+
+	public int getNoOfDays() {
+		return noOfDays;
+	}
+
+	public void setNoOfDays(int noOfDays) {
+		this.noOfDays = noOfDays;
 	}
 
 	

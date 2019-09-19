@@ -62,7 +62,7 @@
                                     <Insets left="40.0" />
                                  </HBox.margin>
                                  <children>
-                                    <Button fx:id="btnAddConsultation" layoutX="155.0" layoutY="167.0" mnemonicParsing="false" text="Add" />
+                                    <Button fx:id="btnAddConsultation" onAction="#addConsultation" layoutX="155.0" layoutY="167.0" mnemonicParsing="false" text="Add" />
                                  </children>
                               </AnchorPane>
                            </children>

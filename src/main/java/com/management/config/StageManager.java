@@ -82,7 +82,7 @@ public class StageManager {
         return rootNode;
     }
     
-    private Pane loadPane(String fxmlFilePath) {
+    public Pane loadPane(String fxmlFilePath) {
     	Pane pane = null;
     	try {
     		pane = (Pane) springFXMLLoader.load(fxmlFilePath);

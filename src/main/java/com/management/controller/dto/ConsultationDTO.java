@@ -1,56 +1,36 @@
-package com.management.entity;
+package com.management.controller.dto;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
-import com.calendarfx.model.Entry;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.management.entity.ConsultationMedicine;
+import com.management.entity.Location;
 
-@Entity
-@Table(name="CONSULTATION")
-public class Consultation{
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long consultationId;
+public class ConsultationDTO {
 	
-	@Column(name = "COMPLAINTS")
 	private String complaints;
 	
-	@Column(name = "EARS")
 	private String ears;
 	
-	@Column(name = "NOSE")
 	private String nose;
 	
-	@Column(name = "THROAT")
 	private String throat;
 	
-	@Column(name = "NECK")
 	private String neck;
 	
-	@Column(name = "ILS")
 	private String ilS;
 
-	@Column(name = "DIAGNOSIS")
 	private String diagnosis;
 	
-	@Column(name = "CHARGE")
 	private double charge;
 	
-	@Column(name = "PAYMENT")
 	private int payment;	
 	
 	private String title;
@@ -62,25 +42,21 @@ public class Consultation{
 	private LocalDate endDate;
 	
 	private LocalTime endTime;
+
+	private String location;
 	
-	@ManyToOne
-	@JoinColumn(name="CONSULTATION")
-	private Location location;
+	private List<ConsultationMedicineDTO> consultationMedicines;
+
 	
-	@OneToMany(mappedBy = "consultation")
-	@JsonIgnore
-	private List<ConsultationMedicine> consultationMedicines;
 	
-	@ManyToOne
-	@JoinColumn(name="PATIENT")
-	private Patient patient;
-	
-	public Consultation() {
+	public ConsultationDTO() {
 		super();
 	}
 
-	public Consultation(String complaints, String ears, String nose, String throat, String neck, String ilS,
-			String diagnosis, int payment) {
+	public ConsultationDTO(String complaints, String ears, String nose, String throat, String neck, String ilS,
+			String diagnosis, double charge, int payment, String title, LocalDate startDate, LocalTime startTime,
+			LocalDate endDate, LocalTime endTime, String location,
+			List<ConsultationMedicineDTO> consultationMedicines) {
 		super();
 		this.complaints = complaints;
 		this.ears = ears;
@@ -89,15 +65,15 @@ public class Consultation{
 		this.neck = neck;
 		this.ilS = ilS;
 		this.diagnosis = diagnosis;
+		this.charge = charge;
 		this.payment = payment;
-	}
-
-	public long getConsultationId() {
-		return consultationId;
-	}
-
-	public void setConsultationId(long consultationId) {
-		this.consultationId = consultationId;
+		this.title = title;
+		this.startDate = startDate;
+		this.startTime = startTime;
+		this.endDate = endDate;
+		this.endTime = endTime;
+		this.location = location;
+		this.consultationMedicines = consultationMedicines;
 	}
 
 	public String getComplaints() {
@@ -156,36 +132,20 @@ public class Consultation{
 		this.diagnosis = diagnosis;
 	}
 
+	public double getCharge() {
+		return charge;
+	}
+
+	public void setCharge(double charge) {
+		this.charge = charge;
+	}
+
 	public int getPayment() {
 		return payment;
 	}
 
 	public void setPayment(int payment) {
 		this.payment = payment;
-	}
-
-	public List<ConsultationMedicine> getConsultationMedicines() {
-		return consultationMedicines;
-	}
-
-	public void setConsultationMedicines(List<ConsultationMedicine> consultationMedicines) {
-		this.consultationMedicines = consultationMedicines;
-	}
-
-	public Location getLocation() {
-		return location;
-	}
-
-	public void setLocation(Location location) {
-		this.location = location;
-	}
-
-	public Patient getPatient() {
-		return patient;
-	}
-
-	public void setPatient(Patient patient) {
-		this.patient = patient;
 	}
 
 	public String getTitle() {
@@ -228,12 +188,21 @@ public class Consultation{
 		this.endTime = endTime;
 	}
 
-	public double getCharge() {
-		return charge;
+	public String getLocation() {
+		return location;
 	}
 
-	public void setCharge(double charge) {
-		this.charge = charge;
+	public void setLocation(String location) {
+		this.location = location;
 	}
+
+	public List<ConsultationMedicineDTO> getConsultationMedicines() {
+		return consultationMedicines;
+	}
+
+	public void setConsultationMedicines(List<ConsultationMedicineDTO> consultationMedicines) {
+		this.consultationMedicines = consultationMedicines;
+	}
+	
 	
 }

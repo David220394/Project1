@@ -152,6 +152,7 @@ public class CalendarController implements Initializable {
 						entry.setFullDay(true);
 					}
 				}
+				
 				return entry;
 			}
 		});
