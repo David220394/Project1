@@ -41,7 +41,7 @@ public class PatientManagementApplication extends javafx.application.Application
 	    }
 
 	    protected void displayInitialScene() {
-	        stageManager.switchScene(FxmlView.INDEX);
+	        stageManager.switchScene(FxmlView.HOME);
 	    }
 
 	    private ConfigurableApplicationContext springBootApplicationContext() {

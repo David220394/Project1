@@ -1,14 +1,21 @@
 package com.management.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.management.controller.dto.AppointmentDTO;
+import com.management.controller.dto.ConsultationDTO;
+import com.management.controller.dto.ConsultationMedicineDTO;
 import com.management.entity.Consultation;
+import com.management.entity.ConsultationMedicine;
 import com.management.entity.Location;
+import com.management.entity.Medicine;
+import com.management.entity.MedicineEnum;
 import com.management.entity.Patient;
+import com.management.repository.ConsultationMedicineRepository;
 import com.management.repository.ConsultationRepository;
 import com.management.repository.LocationRepository;
 import com.management.repository.PatientRepository;
@@ -20,17 +27,60 @@ public class ConsultationService {
 	
 	private LocationRepository locationRepository;
 	
+	private MedicineService medicineService;
+	
 	private PatientRepository patientRepository;
+	
+	private ConsultationMedicineRepository consultationMedicineRepository;
 
-	public ConsultationService(ConsultationRepository consultationRepository, LocationRepository locationRepository, PatientRepository patientRepository) {
+	public ConsultationService(ConsultationRepository consultationRepository, LocationRepository locationRepository, PatientRepository patientRepository, MedicineService medicineService, ConsultationMedicineRepository consultationMedicineRepository) {
 		super();
 		this.consultationRepository = consultationRepository;
 		this.locationRepository = locationRepository;
 		this.patientRepository = patientRepository;
+		this.consultationMedicineRepository = consultationMedicineRepository;
+		this.medicineService = medicineService;
 	}
 	
-	public void saveConsultation(Consultation consultation) {
+	public void saveConsultation(ConsultationDTO dto) {
+		Patient p = null;
+		if(dto.getPatient() != null) {
+			p = patientRepository.findByFirstNameAndLastName(dto.getPatient().getFirstName(), dto.getPatient().getLastName());
+		}
+	
+		Consultation consultation = new Consultation();
+		consultation.setComplaints(dto.getComplaints());
+		consultation.setEars(dto.getEars());
+		consultation.setThroat(dto.getThroat());
+		consultation.setNeck(dto.getNeck());
+		consultation.setNose(dto.getNose());
+		consultation.setIlS(dto.getIlS());
+		consultation.setDiagnosis(dto.getDiagnosis());
+		consultation.setCharge(dto.getCharge());
+		consultation.setStartDate(dto.getStartDate());
+		consultation.setStartTime(dto.getStartTime());
+		consultation.setEndDate(dto.getEndDate());
+		consultation.setEndTime(dto.getEndTime());
+		consultation.setLocation(findLocationByName(dto.getLocation()));
+		consultation.setPatient(p);
+		
 		consultationRepository.save(consultation);
+		
+		for (ConsultationMedicineDTO cMDto : dto.getConsultationMedicines()) {
+			Medicine medicine = medicineService.findByMedicineName(cMDto.getMedicine());
+			if(medicine == null) {
+				medicine = new Medicine();
+				medicine.setMedicineName(cMDto.getMedicine());
+				medicine.setConsumption(MedicineEnum.valueOf(cMDto.getConsumption()));
+				medicine = medicineService.addMedicine(medicine);
+			}
+			ConsultationMedicine cM = new ConsultationMedicine();
+			cM.setConsultation(consultation);
+			cM.setMedicine(medicine);
+			cM.setIntakeTimes(cMDto.getIntakeTimes());
+			cM.setNoOfDays(cMDto.getNoOfDays());
+			consultationMedicineRepository.save(cM);
+		}
 	}
 	
 	public void saveConsultationFromDto(AppointmentDTO dto) {
@@ -48,7 +98,7 @@ public class ConsultationService {
 		consultation.setStartTime(LocalTime.parse(dto.getFrom()));
 		consultation.setEndDate(dto.getEndDate());
 		consultation.setEndTime(LocalTime.parse(dto.getTo()));
-		saveConsultation(consultation);
+		consultationRepository.save(consultation);
 	}
 	
 	public List<Consultation> findAllConsultations() {

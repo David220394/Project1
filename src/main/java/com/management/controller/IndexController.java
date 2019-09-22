@@ -70,16 +70,13 @@ public class IndexController implements Initializable {
     
     public void handleClicks(ActionEvent event) {
     	if (event.getSource() == btnOverview) {
-    		stageManager.switchPane(FxmlView.DASHBOARD, pnlOverview);
+    		stageManager.switchPane(FxmlView.CALENDAR, pnlCalendar);
         }
     	if (event.getSource() == btnPatient) {
     		stageManager.switchPane(FxmlView.LIST, pnlPatients);
         }
     	if (event.getSource() == btnAddPatient) {
     		stageManager.switchPane(FxmlView.REGISTRATION, pnlAddPatient);
-        }
-    	if (event.getSource() == btnCalendar) {
-    		stageManager.switchPane(FxmlView.CALENDAR, pnlCalendar);
         }
     	if (event.getSource() == btnExit) {
     		Platform.exit();

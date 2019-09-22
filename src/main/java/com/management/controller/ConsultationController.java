@@ -2,6 +2,7 @@ package com.management.controller;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -15,9 +16,11 @@ import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import com.management.config.SpringFXMLLoader;
 import com.management.config.StageManager;
+import com.management.controller.dto.ConsultationDTO;
+import com.management.controller.dto.ConsultationMedicineDTO;
+import com.management.controller.dto.PatientDTO;
 import com.management.entity.FxmlView;
 import com.management.entity.Location;
-import com.management.entity.Patient;
 import com.management.service.ConsultationService;
 
 import javafx.event.ActionEvent;
@@ -92,12 +95,28 @@ public class ConsultationController  implements Initializable  {
     @FXML
     private Button btnSubmit;
     
+	private LocalDate startDate;
+	
+	private LocalTime startTime;
+	
+	private LocalDate endDate;
+	
+	private LocalTime endTime;
+    
     List<MedcineController> medcines;
     
-    Patient patient;
+    PatientDTO patient;
 	
+    ConsultationDTO dto;
+    
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		dto = null;
+		
+		if(startDate == null) {
+			lblDateTime.setText(LocalDate.now().toString() + " " + LocalTime.now().toString());
+		}
+		
 		medcines = new ArrayList<>();
 		List<String> locationNames = new ArrayList<>();
 		List<Location> locations = consultationService.findAllLocations();
@@ -105,6 +124,11 @@ public class ConsultationController  implements Initializable  {
 		for (Location l : locations) {
 			location.getItems().add(l.getName());
 		}
+	}
+	
+	public void setConsultationFromApp(String location, PatientDTO patient) {
+		this.patient = patient;
+		this.location.setValue(location);
 	}
 	
 	public void addMedcine(ActionEvent event) {
@@ -117,7 +141,28 @@ public class ConsultationController  implements Initializable  {
 	}
 	
 	public void onSubmit(ActionEvent event) {
+		List<ConsultationMedicineDTO> consultationMedicines = new ArrayList<>();
+		for (MedcineController med : medcines) {
+			consultationMedicines.add(med.getValues());
+		}
+		dto = new ConsultationDTO();
+		dto.setComplaints(txtComplaints.getText());
+		dto.setEars(txtEars.getText());
+		dto.setThroat(txtThroats.getText());
+		dto.setNeck(txtNeck.getText());
+		dto.setNose(txtNose.getText());
+		dto.setIlS(txtILS.getText());
+		dto.setDiagnosis(txtDiagnosis.getText());
+		dto.setCharge(Integer.parseInt(txtCharges.getText()));
+		dto.setStartDate(startDate);
+		dto.setStartTime(startTime);
+		dto.setEndDate(LocalDate.now());
+		dto.setEndTime(LocalTime.now());
+		dto.setLocation(location.getValue());
+		dto.setConsultationMedicines(consultationMedicines);
 		
+		consultationService.saveConsultation(dto);
+		closeStage(event);
 	}
 	
 	public void onCancel(ActionEvent event) {
@@ -138,11 +183,11 @@ public class ConsultationController  implements Initializable  {
 		this.medcines = medcines;
 	}
 
-	public Patient getPatient() {
+	public PatientDTO getPatient() {
 		return patient;
 	}
 
-	public void setPatient(com.management.entity.Patient patient) {
+	public void setPatient(PatientDTO patient) {
 		this.patient = patient;
 		fName.setText(patient.getFirstName() + " " + patient.getLastName());
 		if(patient.getDateOfBirth() != null) {

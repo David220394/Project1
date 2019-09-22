@@ -92,6 +92,17 @@ public enum FxmlView {
             return "/template/index.fxml";
         }
     },
+    HOME {
+        @Override
+        public String getTitle() {
+            return getStringFromResourceBundle("home.title");
+        }
+
+        @Override
+        public String getFxmlFile() {
+            return "/template/home.fxml";
+        }
+    },
     DASHBOARD {
         @Override
         public String getTitle() {

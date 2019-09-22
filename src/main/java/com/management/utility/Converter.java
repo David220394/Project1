@@ -27,8 +27,6 @@ public class Converter {
 				c.getIlS(),
 				c.getDiagnosis(),
 				c.getCharge(),
-				c.getPayment(),
-				c.getTitle(),
 				c.getStartDate(),
 				c.getStartTime(),
 				c.getEndDate(),
@@ -43,7 +41,7 @@ public class Converter {
 	public static ConsultationMedicineDTO consultationMedicineToDto(ConsultationMedicine cM) {
 		ConsultationMedicineDTO dto = new ConsultationMedicineDTO(
 				cM.getMedicine().getMedicineName(),
-				cM.getMedicine().getDosage(),
+				cM.getNoOfDays(),
 				cM.getMedicine().getConsumption().name(),
 				cM.getIntakeTimes()
 				);

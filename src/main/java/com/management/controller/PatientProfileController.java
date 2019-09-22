@@ -132,6 +132,7 @@ public class PatientProfileController implements Initializable{
 		Parent parent = stageManager.getParentView(FxmlView.CONSULTATION);
 		ConsultationController dialogController = loader.getLoader()
 				.<ConsultationController>getController();
+		dialogController.setPatient(patient);
 		Scene scene = new Scene(parent);
 		Stage stage = new Stage();
 		stage.initModality(Modality.APPLICATION_MODAL);

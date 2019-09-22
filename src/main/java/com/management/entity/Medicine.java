@@ -23,9 +23,6 @@ public class Medicine {
 	@Column(name = "NAME")
 	private String medicineName;
 	
-	@Column(name = "DOSAGE")
-	private int dosage;
-	
 	@Column(name = "CONSUMPTION")
 	private MedicineEnum consumption;
 	
@@ -37,10 +34,9 @@ public class Medicine {
 		super();
 	}
 
-	public Medicine(String medicineName, int dosage, MedicineEnum consumption) {
+	public Medicine(String medicineName, MedicineEnum consumption) {
 		super();
 		this.medicineName = medicineName;
-		this.dosage = dosage;
 		this.consumption = consumption;
 	}
 
@@ -58,14 +54,6 @@ public class Medicine {
 
 	public void setMedicineName(String medicineName) {
 		this.medicineName = medicineName;
-	}
-
-	public int getDosage() {
-		return dosage;
-	}
-
-	public void setDosage(int dosage) {
-		this.dosage = dosage;
 	}
 
 	public MedicineEnum getConsumption() {

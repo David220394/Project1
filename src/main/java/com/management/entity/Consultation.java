@@ -50,9 +50,6 @@ public class Consultation{
 	@Column(name = "CHARGE")
 	private double charge;
 	
-	@Column(name = "PAYMENT")
-	private int payment;	
-	
 	private String title;
 	
 	private LocalDate startDate;
@@ -89,7 +86,6 @@ public class Consultation{
 		this.neck = neck;
 		this.ilS = ilS;
 		this.diagnosis = diagnosis;
-		this.payment = payment;
 	}
 
 	public long getConsultationId() {
@@ -154,14 +150,6 @@ public class Consultation{
 
 	public void setDiagnosis(String diagnosis) {
 		this.diagnosis = diagnosis;
-	}
-
-	public int getPayment() {
-		return payment;
-	}
-
-	public void setPayment(int payment) {
-		this.payment = payment;
 	}
 
 	public List<ConsultationMedicine> getConsultationMedicines() {
