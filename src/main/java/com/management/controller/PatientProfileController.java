@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 
+import com.jfoenix.controls.JFXTreeTableView;
+import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.management.config.SpringFXMLLoader;
 import com.management.config.StageManager;
@@ -30,6 +32,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableColumn.CellDataFeatures;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -61,25 +64,28 @@ public class PatientProfileController implements Initializable{
 	    private AnchorPane consultationPane;
 
 	    @FXML
-	    private TableView<Consultation> consultationTable;
+	    private JFXTreeTableView<Consultation> consultationTable;
 
 	    @FXML
-	    private TableColumn<Consultation, String> visitCol;
+	    private TreeTableColumn<Consultation, String> visitCol;
 
 	    @FXML
-	    private TableColumn<Consultation, String> complaintCol;
+	    private TreeTableColumn<Consultation, String> complaintCol;
 
 	    @FXML
-	    private TableColumn<Consultation, String> diagnosisCol;
+	    private TreeTableColumn<Consultation, String> diagnosisCol;
 
 	    @FXML
-	    private TableColumn<Consultation, String> locationCol;
-	    
+	    private TreeTableColumn<Consultation, String> locationCol;
+
 	    @FXML
-	    private TableColumn<Consultation, String> chargeCol;
+	    private TreeTableColumn<Consultation, String> chargeCol;
 	    
 	    @FXML
 	    private Button btnAddConsultation;
+	    
+	    @FXML
+	    private Button btnUpdatePatient;
 	    
 	    
 	    private PatientDTO patient;
@@ -92,6 +98,7 @@ public class PatientProfileController implements Initializable{
 
 	    public void setPatient(PatientDTO patient) {
 			this.patient = patient;
+			loadData();
 			fName.setText(patient.getFirstName() + " " + patient.getLastName());
 			if(patient.getDateOfBirth() != null) {
 				age.setText(String.valueOf(LocalDate.now().getYear() - patient.getDateOfBirth().getYear()));
@@ -103,16 +110,69 @@ public class PatientProfileController implements Initializable{
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		initTableCol();
-		
+		list = FXCollections.observableArrayList();
+		final TreeItem<Consultation> root = new RecursiveTreeItem<Consultation>(list, RecursiveTreeObject::getChildren);
+		consultationTable.setRoot(root);
+		consultationTable.setShowRoot(false);
 	}
 	
+	public void updatePatient() {
+		SpringFXMLLoader loader = stageManager.getSpringFXMLLoader();
+		Parent parent = stageManager.getParentView(FxmlView.REGISTRATION);
+		AddPatientController dialogController = loader.getLoader()
+				.<AddPatientController>getController();
+		dialogController.setPatientDto(patient);
+		Scene scene = new Scene(parent);
+		Stage stage = new Stage();
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.setScene(scene);
+		stage.showAndWait();
+		
+		PatientDTO dto = dialogController.getPatientDto();
+		if(dto != null) {
+			setPatient(dto);
+		}
+	}
 	
 	public void initTableCol() {
-		visitCol.setCellValueFactory(new PropertyValueFactory<>("visitDate"));
-		complaintCol.setCellValueFactory(new PropertyValueFactory<>("complaint"));
-		diagnosisCol.setCellValueFactory(new PropertyValueFactory<>("diagnosis"));
-		locationCol.setCellValueFactory(new PropertyValueFactory<>("location"));
-		chargeCol.setCellValueFactory(new PropertyValueFactory<>("charge"));
+		visitCol.setCellValueFactory(
+				new Callback<TreeTableColumn.CellDataFeatures<Consultation, String>, ObservableValue<String>>() {
+					@Override
+					public ObservableValue<String> call(CellDataFeatures<Consultation, String> param) {
+						return param.getValue().getValue().visitDate;
+					}
+				});
+		complaintCol.setCellValueFactory(
+				new Callback<TreeTableColumn.CellDataFeatures<Consultation, String>, ObservableValue<String>>() {
+					@Override
+					public ObservableValue<String> call(CellDataFeatures<Consultation, String> param) {
+						return param.getValue().getValue().complaint;
+					}
+				});
+		
+		diagnosisCol.setCellValueFactory(
+				new Callback<TreeTableColumn.CellDataFeatures<Consultation, String>, ObservableValue<String>>() {
+					@Override
+					public ObservableValue<String> call(CellDataFeatures<Consultation, String> param) {
+						return param.getValue().getValue().diagnosis;
+					}
+				});
+		
+		locationCol.setCellValueFactory(
+				new Callback<TreeTableColumn.CellDataFeatures<Consultation, String>, ObservableValue<String>>() {
+					@Override
+					public ObservableValue<String> call(CellDataFeatures<Consultation, String> param) {
+						return param.getValue().getValue().location;
+					}
+				});
+
+		chargeCol.setCellValueFactory(
+				new Callback<TreeTableColumn.CellDataFeatures<Consultation, String>, ObservableValue<String>>() {
+					@Override
+					public ObservableValue<String> call(CellDataFeatures<Consultation, String> param) {
+						return param.getValue().getValue().charge;
+					}
+				});
 	}
 	
 	public void loadData() {
@@ -124,7 +184,6 @@ public class PatientProfileController implements Initializable{
 										consultation.getLocation(), 
 										String.valueOf(consultation.getCharge())));
 		}
-		consultationTable.setItems(list);
 	}
 	
 	public void addConsultation() {

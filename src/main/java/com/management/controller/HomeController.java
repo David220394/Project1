@@ -17,14 +17,16 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 
 import com.calendarfx.model.Calendar;
+import com.calendarfx.model.Calendar.Style;
 import com.calendarfx.model.CalendarSource;
 import com.calendarfx.model.Entry;
-import com.calendarfx.model.Calendar.Style;
 import com.calendarfx.view.AllDayView;
 import com.calendarfx.view.CalendarView;
 import com.calendarfx.view.DateControl;
-import com.calendarfx.view.VirtualGrid;
 import com.calendarfx.view.DateControl.CreateEntryParameter;
+import com.calendarfx.view.DateControl.EntryDetailsParameter;
+import com.calendarfx.view.VirtualGrid;
+import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
@@ -36,8 +38,10 @@ import com.management.controller.dto.PatientDTO;
 import com.management.entity.Consultation;
 import com.management.entity.FxmlView;
 import com.management.entity.Location;
+import com.management.entity.Patient;
 import com.management.service.ConsultationService;
 import com.management.service.PatientService;
+import com.management.utility.Converter;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -50,12 +54,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableColumn.CellDataFeatures;
+import javafx.scene.input.InputEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -72,8 +79,18 @@ public class HomeController implements Initializable {
 	@Autowired
 	private PatientService patientService;
 
-	@FXML
-	private TextField search;
+	 @FXML
+    private JFXTabPane mainTabs;
+
+    @FXML
+    private Tab patientTab;
+
+    @FXML
+    private TextField search;
+
+    @FXML
+    private Tab calendarTab;
+
 
 	@FXML
 	private JFXTreeTableView<Patient> patientTableView;
@@ -95,6 +112,16 @@ public class HomeController implements Initializable {
 
 		initTable();
 		initCalendar();
+		mainTabs.getSelectionModel().selectedItemProperty().addListener(
+			    new ChangeListener<Tab>() {
+			        @Override
+			        public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab t1) {
+			            if("patientTab".equals(t1.idProperty().getValue())) {
+			            	populatePatientList();
+			            }
+			        }
+			    }
+			);
 	}
 	
 	public void initTable() {
@@ -102,18 +129,7 @@ public class HomeController implements Initializable {
 
 		patients = FXCollections.observableArrayList();
 
-		List<com.management.entity.Patient> patientList = patientService.findAll();
-		for (com.management.entity.Patient patient : patientList) {
-			Patient p = new Patient();
-			p.setFirstName(new SimpleStringProperty(patient.getFirstName()));
-			p.setLastName(new SimpleStringProperty(patient.getLastName()));
-			if(patient.getDateOfBirth() != null) {
-				p.setAge(new SimpleStringProperty(String.valueOf(LocalDate.now().getYear() - patient.getDateOfBirth().getYear())));
-				p.setLastVisitDate(new SimpleStringProperty(patient.getLastVisitDate().toString()));
-			}
-			p.setPhoneNumber(new SimpleStringProperty(String.valueOf(patient.getPhoneNumber())));
-			patients.add(p);
-		}
+		populatePatientList();
 
 		final TreeItem<Patient> root = new RecursiveTreeItem<Patient>(patients, RecursiveTreeObject::getChildren);
 
@@ -149,12 +165,28 @@ public class HomeController implements Initializable {
 		});
 	}
 	
+	public void populatePatientList() {
+		patients.clear();
+		List<com.management.entity.Patient> patientList = patientService.findAll();
+		for (com.management.entity.Patient patient : patientList) {
+			Patient p = new Patient();
+			p.setFirstName(new SimpleStringProperty(patient.getFirstName()));
+			p.setLastName(new SimpleStringProperty(patient.getLastName()));
+			if(patient.getDateOfBirth() != null) {
+				p.setAge(new SimpleStringProperty(String.valueOf(LocalDate.now().getYear() - patient.getDateOfBirth().getYear())));
+				p.setLastVisitDate(new SimpleStringProperty(patient.getLastVisitDate().toString()));
+			}
+			p.setPhoneNumber(new SimpleStringProperty(String.valueOf(patient.getPhoneNumber())));
+			patients.add(p);
+		}
+	}
+	
 	public void openProfilePage(Patient patient) {
 		SpringFXMLLoader loader = stageManager.getSpringFXMLLoader();
 		Parent parent = stageManager.getParentView(FxmlView.PROFILE);
 		PatientProfileController dialogController = loader.getLoader()
 				.<PatientProfileController>getController();
-		PatientDTO p = patientService.findByFirstNameAndLastName(patient.firstName.get(), patient.lastName.get());
+		PatientDTO p = patientService.findByFirstNameAndLastNameDto(patient.firstName.get(), patient.lastName.get());
 		dialogController.setPatient(p);
 		Scene scene = new Scene(parent);
 		Stage stage = new Stage();
@@ -186,6 +218,35 @@ public class HomeController implements Initializable {
 			p.setPhoneNumber(new SimpleStringProperty(String.valueOf(patient.getPhoneNumber())));
 			patients.add(p);
 		}
+	}
+	
+	public void addConsultation() {
+		calendarView.setEntryDetailsCallback(new Callback<DateControl.EntryDetailsParameter, Boolean>(){
+
+			@Override
+			public Boolean call(EntryDetailsParameter param) {
+				InputEvent evt = param.getInputEvent();
+		        if (evt instanceof MouseEvent) {
+		                MouseEvent mouseEvent = (MouseEvent) evt;
+		                if (mouseEvent.getClickCount() == 2) {
+		                	Entry<?> entry = param.getEntry();
+		                	Consultation c = consultationService.findById(Long.parseLong(entry.getId()));
+		                	com.management.entity.Patient patient = c.getPatient();
+		                	SpringFXMLLoader loader = stageManager.getSpringFXMLLoader();
+		            		Parent parent = stageManager.getParentView(FxmlView.CONSULTATION);
+		            		ConsultationController dialogController = loader.getLoader()
+		            				.<ConsultationController>getController();
+		            		dialogController.setPatient(Converter.patientToDto(patient));
+		            		Scene scene = new Scene(parent);
+		            		Stage stage = new Stage();
+		            		stage.initModality(Modality.APPLICATION_MODAL);
+		            		stage.setScene(scene);
+		            		stage.showAndWait();
+		        }
+		    } 
+				return true;
+			}
+		});
 	}
 	
 	private void initializeTable() {
@@ -270,6 +331,7 @@ public class HomeController implements Initializable {
 
 		addEntry();
 		addCanlendar();
+		addConsultation();
 		updateTimeThread.setPriority(Thread.MIN_PRIORITY);
 		updateTimeThread.setDaemon(true);
 		updateTimeThread.start();
@@ -334,6 +396,7 @@ public class HomeController implements Initializable {
 			List<Entry<?>> entries = new ArrayList<>();
 			for (Consultation consultation : consultations) {
 				Entry<?> entry = new Entry();
+				entry.setId(String.valueOf(consultation.getConsultationId()));
 				entry.setTitle(consultation.getTitle());
 				entry.changeStartDate(consultation.getStartDate());
 				entry.changeStartTime(consultation.getStartTime());
@@ -349,6 +412,11 @@ public class HomeController implements Initializable {
 		CalendarSource myCalendarSource = new CalendarSource();
 		int count = 1;
 		List<Location> locations = consultationService.findAllLocations();
+		if(locations == null || locations.size() < 2) {
+			locations = new ArrayList<>();
+			locations.add(consultationService.saveLocation(new Location("Home")));
+			locations.add(consultationService.saveLocation(new Location("Clinic")));
+		}
 		for (Location location : locations) {
 			Calendar c = new Calendar(location.getName());
 			c.setStyle(Style.getStyle(count));

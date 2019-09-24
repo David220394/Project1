@@ -3,6 +3,7 @@ package com.management.service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -83,21 +84,50 @@ public class ConsultationService {
 		}
 	}
 	
+	public void saveConsultation(Consultation consultation) {
+				
+		consultationRepository.save(consultation);
+		
+		for (ConsultationMedicine cMDto : consultation.getConsultationMedicines()) {
+			Medicine medicine = cMDto.getMedicine();
+			/*
+			 * if(medicine == null) { medicine = new Medicine();
+			 * medicine.setMedicineName(cMDto.getMedicine());
+			 * medicine.setConsumption(MedicineEnum.valueOf(cMDto.getConsumption()));
+			 * medicine = medicineService.addMedicine(medicine); }
+			 */
+			ConsultationMedicine cM = new ConsultationMedicine();
+			cM.setConsultation(consultation);
+			cM.setMedicine(medicine);
+			cM.setIntakeTimes(cMDto.getIntakeTimes());
+			cM.setNoOfDays(cMDto.getNoOfDays());
+			consultationMedicineRepository.save(cM);
+		}
+	}
+	
 	public void saveConsultationFromDto(AppointmentDTO dto) {
 		Consultation consultation = new Consultation();
 		if(dto.getPatient() != null) {
 			consultation.setPatient(dto.getPatient());
 		}else {
+			String[] names = dto.getName().split(" ");
 			Patient p = new Patient();
-			p.setFirstName(dto.getName());
+			if(names.length > 1) {
+				p.setFirstName(names[0]);
+				p.setLastName(names[1]);
+			}else {
+				p.setFirstName(names[0]);
+			}
 			p = patientRepository.save(p);
 			consultation.setPatient(p);
 		}
+		Location l = locationRepository.findByName(dto.getLocation());
 		consultation.setTitle(dto.getName());
 		consultation.setStartDate(dto.getStartDate());
 		consultation.setStartTime(LocalTime.parse(dto.getFrom()));
 		consultation.setEndDate(dto.getEndDate());
 		consultation.setEndTime(LocalTime.parse(dto.getTo()));
+		consultation.setLocation(l);
 		consultationRepository.save(consultation);
 	}
 	
@@ -106,7 +136,8 @@ public class ConsultationService {
 	}
 	
 	public Consultation findById(long id) {
-		return consultationRepository.findById(id).get();
+		Optional<Consultation> c = consultationRepository.findById(id);
+		return c.get();
 	}
 	
 	public List<Consultation> findByPatient(Patient patient){

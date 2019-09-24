@@ -14,15 +14,21 @@ import org.springframework.stereotype.Controller;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.validation.NumberValidator;
+import com.jfoenix.validation.RequiredFieldValidator;
 import com.management.config.SpringFXMLLoader;
 import com.management.config.StageManager;
 import com.management.controller.dto.ConsultationDTO;
 import com.management.controller.dto.ConsultationMedicineDTO;
 import com.management.controller.dto.PatientDTO;
+import com.management.entity.Consultation;
+import com.management.entity.ConsultationMedicine;
 import com.management.entity.FxmlView;
 import com.management.entity.Location;
 import com.management.service.ConsultationService;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -106,16 +112,17 @@ public class ConsultationController  implements Initializable  {
     List<MedcineController> medcines;
     
     PatientDTO patient;
+    
+    Consultation consultation;
 	
     ConsultationDTO dto;
     
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		dto = null;
-		
-		if(startDate == null) {
-			lblDateTime.setText(LocalDate.now().toString() + " " + LocalTime.now().toString());
-		}
+		startDate = LocalDate.now();
+		startTime = LocalTime.now();
+		lblDateTime.setText(LocalDate.now().toString() + " " + LocalTime.now().toString());
 		
 		medcines = new ArrayList<>();
 		List<String> locationNames = new ArrayList<>();
@@ -124,6 +131,35 @@ public class ConsultationController  implements Initializable  {
 		for (Location l : locations) {
 			location.getItems().add(l.getName());
 		}
+		initValidation();
+	}
+	
+	public void initValidation() {
+		RequiredFieldValidator requiredValidator = new RequiredFieldValidator();
+		requiredValidator.setMessage("Input required");
+
+		txtComplaints.getValidators().add(requiredValidator);
+		location.getValidators().add(requiredValidator);
+
+		txtComplaints.focusedProperty().addListener(new ChangeListener<Boolean>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				if (!newValue) {
+					txtComplaints.validate();
+				}
+			}
+		});
+		
+		location.focusedProperty().addListener(new ChangeListener<Boolean>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				if (!newValue) {
+					location.validate();
+				}
+			}
+		});
 	}
 	
 	public void setConsultationFromApp(String location, PatientDTO patient) {
@@ -131,11 +167,21 @@ public class ConsultationController  implements Initializable  {
 		this.location.setValue(location);
 	}
 	
-	public void addMedcine(ActionEvent event) {
+	public void addMedcine() {
 		SpringFXMLLoader loader = stageManager.getSpringFXMLLoader();
 		Pane pane = stageManager.loadPane(FxmlView.MEDICINE.getFxmlFile());
 		MedcineController controller = loader.getLoader()
 				.<MedcineController>getController();
+		medcines.add(controller);
+		vMedcine.getChildren().add(pane);
+	}
+	
+	public void addMedcine(ConsultationMedicine medicine) {
+		SpringFXMLLoader loader = stageManager.getSpringFXMLLoader();
+		Pane pane = stageManager.loadPane(FxmlView.MEDICINE.getFxmlFile());
+		MedcineController controller = loader.getLoader()
+				.<MedcineController>getController();
+		controller.setConsultationMedicine(medicine);
 		medcines.add(controller);
 		vMedcine.getChildren().add(pane);
 	}
@@ -159,6 +205,7 @@ public class ConsultationController  implements Initializable  {
 		dto.setEndDate(LocalDate.now());
 		dto.setEndTime(LocalTime.now());
 		dto.setLocation(location.getValue());
+		dto.setPatient(patient);
 		dto.setConsultationMedicines(consultationMedicines);
 		
 		consultationService.saveConsultation(dto);
@@ -192,6 +239,34 @@ public class ConsultationController  implements Initializable  {
 		fName.setText(patient.getFirstName() + " " + patient.getLastName());
 		if(patient.getDateOfBirth() != null) {
 			age.setText(String.valueOf(LocalDate.now().getYear() - patient.getDateOfBirth().getYear()));
+		}
+	}
+
+	
+	
+	public Consultation getConsultation() {
+		return consultation;
+	}
+
+	public void setConsultation(Consultation consultation) {
+		this.consultation = consultation;
+		fName.setText(consultation.getPatient().getFirstName() + " " + consultation.getPatient().getLastName());
+		if(consultation.getPatient().getDateOfBirth() != null) {
+			age.setText(String.valueOf(LocalDate.now().getYear() - consultation.getPatient().getDateOfBirth().getYear()));
+		}
+		if(consultation.getComplaints() != null) { txtComplaints.setText(consultation.getComplaints());}
+		if(consultation.getEars() != null) { txtEars.setText(consultation.getEars());}
+		if(consultation.getNose() != null) { txtNose.setText(consultation.getNose());}
+		if(consultation.getThroat() != null) { txtThroats.setText(consultation.getThroat());}
+		if(consultation.getIlS() != null) { txtILS.setText(consultation.getIlS());}
+		if(consultation.getNeck() != null) { txtNeck.setText(consultation.getNeck());}
+		if(consultation.getDiagnosis() != null) { txtDiagnosis.setText(consultation.getDiagnosis());}
+		if(consultation.getCharge() != 0) { txtCharges.setText(String.valueOf(consultation.getCharge()));}
+		if(consultation.getLocation() != null) { location.setValue(consultation.getLocation().getName());}
+		if(consultation.getConsultationMedicines() != null) {
+			for (ConsultationMedicine medicine : consultation.getConsultationMedicines()) {
+				addMedcine(medicine);
+			}
 		}
 	}
 	

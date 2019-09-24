@@ -57,16 +57,6 @@ public class IndexController implements Initializable {
     
     @FXML
     private PatientController patientController;
-
-
-    public void toRegister(ActionEvent event) throws IOException {
-        stageManager.switchScene(FxmlView.REGISTRATION);
-    }
-
-    public void login(ActionEvent event) throws IOException {
-
-        stageManager.switchScene(FxmlView.DASHBOARD);
-    }
     
     public void handleClicks(ActionEvent event) {
     	if (event.getSource() == btnOverview) {

@@ -30,13 +30,18 @@ public class PatientService {
 		return p;
 	}
 	
-	public PatientDTO findByFirstNameAndLastName(String firstName, String lastName) {
+	public PatientDTO findByFirstNameAndLastNameDto(String firstName, String lastName) {
 		Patient p = patientRepository.findByFirstNameAndLastName(firstName, lastName);
 		PatientDTO dto = null;
 		if(p != null) {
 			dto = Converter.patientToDto(p);
 		}
 		return dto;
+	}
+	
+	public Patient findByFirstNameAndLastName(String firstName, String lastName) {
+		Patient p = patientRepository.findByFirstNameAndLastName(firstName, lastName);
+		return p;
 	}
 	
 	public List<Patient> findAll(){

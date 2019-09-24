@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXTabPane?>
+<?import com.jfoenix.controls.JFXTreeTableView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TreeTableColumn?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
 
 <AnchorPane fx:id="pnlProfile" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.management.controller.PatientProfileController">
    <children>
@@ -62,32 +60,29 @@
                                     <Insets left="40.0" />
                                  </HBox.margin>
                                  <children>
-                                    <Button fx:id="btnAddConsultation" onAction="#addConsultation" layoutX="155.0" layoutY="167.0" mnemonicParsing="false" text="Add" />
+                                    <Button fx:id="btnAddConsultation" layoutX="155.0" layoutY="167.0" mnemonicParsing="false" onAction="#addConsultation" text="Add" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" />
+                                    <Button fx:id="btnUpdatePatient" layoutX="148.0" layoutY="2.0" mnemonicParsing="false" onAction="#updatePatient" text="Edit" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
                                  </children>
                               </AnchorPane>
                            </children>
                         </HBox>
                         <AnchorPane fx:id="consultationPane" prefHeight="200.0" prefWidth="200.0">
                            <children>
-                              <TableView fx:id="consultationTable" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <JFXTreeTableView fx:id="consultationTable" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <columns>
-                                    <TableColumn fx:id="visitCol" maxWidth="1.7976931348623157E308" prefWidth="75.0" text="Visit Date" />
-                                    <TableColumn fx:id="complaintCol" maxWidth="2000.0" prefWidth="75.0" text="Complaint" />
-                                    <TableColumn fx:id="diagnosisCol" maxWidth="2000.0" prefWidth="75.0" text="Diagnosis" />
-                                    <TableColumn fx:id="locationCol" prefWidth="75.0" text="Location" />
-                                    <TableColumn fx:id="chargeCol" maxWidth="1.7976931348623157E308" prefWidth="75.0" text="Charge" />
+                                    <TreeTableColumn fx:id="visitCol" prefWidth="94.0" text="Visit Date" />
+                                    <TreeTableColumn fx:id="complaintCol" prefWidth="150.0" text="Complaint" />
+                                    <TreeTableColumn fx:id="diagnosisCol" prefWidth="184.0" text="Diagnosis" />
+                                    <TreeTableColumn fx:id="locationCol" prefWidth="120.0" text="Location" />
+                                    <TreeTableColumn fx:id="chargeCol" prefWidth="67.0" text="Charge" />
                                  </columns>
-                                 <padding>
-                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                 </padding>
-                              </TableView>
+                              </JFXTreeTableView>
                            </children>
                         </AnchorPane>
                      </children>
                   </VBox>
                </children>
             </AnchorPane>
-            <JFXTabPane tabMaxWidth="100.0" />
          </children>
          <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

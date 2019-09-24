@@ -23,8 +23,10 @@ import com.management.controller.dto.AppointmentDTO;
 import com.management.entity.Consultation;
 import com.management.entity.FxmlView;
 import com.management.entity.Location;
+import com.management.entity.Patient;
 import com.management.repository.LocationRepository;
 import com.management.service.ConsultationService;
+import com.management.utility.Converter;
 import com.sun.webkit.ContextMenu;
 
 import javafx.application.Platform;
@@ -99,9 +101,10 @@ public class CalendarController implements Initializable {
 				}
 			};
 		};
-
+		addConsultation();
 		addEntry();
 		addCanlendar();
+		
 		updateTimeThread.setPriority(Thread.MIN_PRIORITY);
 		updateTimeThread.setDaemon(true);
 		updateTimeThread.start();
@@ -159,6 +162,34 @@ public class CalendarController implements Initializable {
 
 	}
 
+	public void addConsultation() {
+		calendarView.setEntryDetailsCallback(new Callback<DateControl.EntryDetailsParameter, Boolean>(){
+
+			@Override
+			public Boolean call(EntryDetailsParameter param) {
+				InputEvent evt = param.getInputEvent();
+		        if (evt instanceof MouseEvent) {
+		                MouseEvent mouseEvent = (MouseEvent) evt;
+		                if (mouseEvent.getClickCount() == 2) {
+		                	Entry<?> entry = param.getEntry();
+		                	Consultation c = consultationService.findById(Long.parseLong(entry.getId()));
+		                	SpringFXMLLoader loader = stageManager.getSpringFXMLLoader();
+		            		Parent parent = stageManager.getParentView(FxmlView.CONSULTATION);
+		            		ConsultationController dialogController = loader.getLoader()
+		            				.<ConsultationController>getController();
+		            		dialogController.setConsultation(c);
+		            		Scene scene = new Scene(parent);
+		            		Stage stage = new Stage();
+		            		stage.initModality(Modality.APPLICATION_MODAL);
+		            		stage.setScene(scene);
+		            		stage.showAndWait();
+		        }
+		    } 
+				return true;
+			}
+		});
+	}
+	
 	public void populateEntry(List<Calendar> calendars) {
 		for (Calendar calendar : calendars) {
 			Location location = consultationService.findLocationByName(calendar.getName());
@@ -166,6 +197,7 @@ public class CalendarController implements Initializable {
 			List<Entry<?>> entries = new ArrayList<>();
 			for (Consultation consultation : consultations) {
 				Entry<?> entry = new Entry();
+				entry.setId(String.valueOf(consultation.getConsultationId()));
 				entry.setTitle(consultation.getTitle());
 				entry.changeStartDate(consultation.getStartDate());
 				entry.changeStartTime(consultation.getStartTime());

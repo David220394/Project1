@@ -133,7 +133,7 @@ public class PatientController implements Initializable {
 		Parent parent = stageManager.getParentView(FxmlView.PROFILE);
 		PatientProfileController dialogController = loader.getLoader()
 				.<PatientProfileController>getController();
-		PatientDTO p = patientService.findByFirstNameAndLastName(patient.firstName.get(), patient.lastName.get());
+		PatientDTO p = patientService.findByFirstNameAndLastNameDto(patient.firstName.get(), patient.lastName.get());
 		dialogController.setPatient(p);
 		Scene scene = new Scene(parent);
 		Stage stage = new Stage();

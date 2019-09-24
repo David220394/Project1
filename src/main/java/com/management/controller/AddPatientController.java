@@ -14,8 +14,10 @@ import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.NumberValidator;
 import com.jfoenix.validation.RequiredFieldValidator;
 import com.management.config.StageManager;
+import com.management.controller.dto.PatientDTO;
 import com.management.entity.Patient;
 import com.management.service.PatientService;
+import com.management.utility.Converter;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -51,6 +53,8 @@ public class AddPatientController implements Initializable {
 	private Button btnSubmit;
 
 	private Patient p;
+	
+	PatientDTO patientDto;
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -118,13 +122,56 @@ public class AddPatientController implements Initializable {
 
 	public void setP(Patient p) {
 		this.p = p;
+		if(p.getLastName() != null) {
+			lName.setText(p.getLastName());
+		}
+		if(p.getDateOfBirth() != null) {
+			dOB.setValue(p.getDateOfBirth());
+		}
+		if(p.getPhoneNumber() != 0) {
+			phone.setText(String.valueOf(p.getPhoneNumber()));
+		}
+		fName.setText(p.getFirstName());
+
+	}
+	
+	
+
+	public PatientDTO getPatientDto() {
+		return patientDto;
+	}
+
+	public void setPatientDto(PatientDTO patientDto) {
+		this.patientDto = patientDto;
+		if(patientDto.getLastName() != null) {
+			lName.setText(patientDto.getLastName());
+		}
+		if(patientDto.getDateOfBirth() != null) {
+			dOB.setValue(patientDto.getDateOfBirth());
+		}
+		if(patientDto.getPhoneNumber() != 0) {
+			phone.setText(String.valueOf(patientDto.getPhoneNumber()));
+		}
+		fName.setText(patientDto.getFirstName());
 	}
 
 	public void onSubmit(ActionEvent event) {
 		if (fName.validate() & lName.validate() & dOB.validate() & phone.validate()) {
 			Patient patient = new com.management.entity.Patient(fName.getText(), lName.getText(),
 					dOB.getValue(), Integer.parseInt(phone.getText()), LocalDate.now());
-			p = patientService.savePatient(patient);
+			if(patientDto != null) {
+				Patient p1 = patientService.findByFirstNameAndLastName(patientDto.getFirstName(), patientDto.getLastName());
+				if(p1 != null) {
+					p1.setFirstName(fName.getText());
+					p1.setLastName(lName.getText());
+					p1.setDateOfBirth(dOB.getValue());
+					p1.setPhoneNumber(Integer.parseInt(phone.getText()));
+					p = patientService.savePatient(p1);
+				}
+			}else {
+				p = patientService.savePatient(patient);
+			}
+			
 			if (p == null) {
 				Notifications.create().darkStyle().title("Error")
 						.text("An Error occur while adding this patient; Please verify if this patient already exist")
@@ -132,6 +179,7 @@ public class AddPatientController implements Initializable {
 			} else {
 				Notifications.create().darkStyle().title("INFO")
 						.text(fName.getText() + " " + lName.getText() + " was succesffuly added").showConfirm();
+				patientDto = Converter.patientToDto(p);
 				closeStage(event);
 			}
 		} else {
