@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXTextArea?>
 <?import com.jfoenix.controls.JFXTextField?>
@@ -21,7 +22,8 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <Label text="Label" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <JFXButton text="Receipt" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0" />
+      <JFXButton fx:id="btnPrescription" onAction="#printPrescription" text="Prescription" AnchorPane.rightAnchor="65.0" AnchorPane.topAnchor="0.0" />
       <ScrollPane layoutY="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0">
          <content>
             <VBox prefHeight="683.0" prefWidth="841.0">

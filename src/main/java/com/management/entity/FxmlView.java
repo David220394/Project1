@@ -59,6 +59,17 @@ public enum FxmlView {
             return "/template/consultation.fxml";
         }
     },
+    PRESCRIPTION {
+        @Override
+		public String getTitle() {
+            return getStringFromResourceBundle("prescription.title");
+        }
+
+        @Override
+		public String getFxmlFile() {
+            return "/template/printPrescription.fxml";
+        }
+    },
     LIST {
         @Override
         public String getTitle() {

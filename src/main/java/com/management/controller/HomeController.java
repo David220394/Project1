@@ -1,5 +1,6 @@
 package com.management.controller;
 
+import java.io.File;
 import java.net.URL;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -20,12 +21,14 @@ import com.calendarfx.model.Calendar;
 import com.calendarfx.model.Calendar.Style;
 import com.calendarfx.model.CalendarSource;
 import com.calendarfx.model.Entry;
+import com.calendarfx.model.Interval;
 import com.calendarfx.view.AllDayView;
 import com.calendarfx.view.CalendarView;
 import com.calendarfx.view.DateControl;
 import com.calendarfx.view.DateControl.CreateEntryParameter;
 import com.calendarfx.view.DateControl.EntryDetailsParameter;
 import com.calendarfx.view.VirtualGrid;
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
@@ -35,10 +38,10 @@ import com.management.config.SpringFXMLLoader;
 import com.management.config.StageManager;
 import com.management.controller.dto.AppointmentDTO;
 import com.management.controller.dto.PatientDTO;
+import com.management.controller.dto.ReportDto;
 import com.management.entity.Consultation;
 import com.management.entity.FxmlView;
 import com.management.entity.Location;
-import com.management.entity.Patient;
 import com.management.service.ConsultationService;
 import com.management.service.PatientService;
 import com.management.utility.Converter;
@@ -54,16 +57,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.AreaChart;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableColumn.CellDataFeatures;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.input.InputEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.control.TreeTableRow;
 import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -71,7 +77,6 @@ import javafx.util.Callback;
 @Controller
 public class HomeController implements Initializable {
 	
-
     @Lazy
     @Autowired
     private StageManager stageManager;
@@ -91,6 +96,26 @@ public class HomeController implements Initializable {
     @FXML
     private Tab calendarTab;
 
+    @FXML
+    private Tab administrationTab;
+
+    @FXML
+    private Label txtTotalPatient;
+
+    @FXML
+    private Label txtMonthGain;
+
+    @FXML
+    private Label txtMonthlyConsultations;
+
+    @FXML
+    private AreaChart<?, ?> gainChart;
+
+    @FXML
+    private JFXButton btnImportPatient;
+
+    @FXML
+    private JFXButton btnExportConsultation;
 
 	@FXML
 	private JFXTreeTableView<Patient> patientTableView;
@@ -118,6 +143,8 @@ public class HomeController implements Initializable {
 			        public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab t1) {
 			            if("patientTab".equals(t1.idProperty().getValue())) {
 			            	populatePatientList();
+			            }else if("administrationTab".equals(t1.idProperty().getValue())) {
+			            	populateReport();
 			            }
 			        }
 			    }
@@ -299,7 +326,6 @@ public class HomeController implements Initializable {
 		patientTableView.getColumns().setAll(firstName, lastName, age, lastVisitDate, phoneNumber);
 	}
 
-
 	public void initCalendar() {
 		calendarView = new CalendarView();
 
@@ -395,17 +421,44 @@ public class HomeController implements Initializable {
 			List<Consultation> consultations = consultationService.findByLocation(location);
 			List<Entry<?>> entries = new ArrayList<>();
 			for (Consultation consultation : consultations) {
+				
 				Entry<?> entry = new Entry();
+				Interval interval = new Interval(consultation.getStartDate(),
+						consultation.getStartTime(),
+						consultation.getEndDate(),
+						consultation.getEndTime());
+				entry.setInterval(interval);
 				entry.setId(String.valueOf(consultation.getConsultationId()));
 				entry.setTitle(consultation.getTitle());
-				entry.changeStartDate(consultation.getStartDate());
-				entry.changeStartTime(consultation.getStartTime());
-				entry.changeEndDate(consultation.getEndDate());
-				entry.changeEndTime(consultation.getEndTime());
-				entries.add(entry);
+				/*
+				 * entry.changeStartDate(consultation.getStartDate());
+				 * entry.changeStartTime(consultation.getStartTime());
+				 * entry.changeEndDate(consultation.getEndDate());
+				 * entry.changeEndTime(consultation.getEndTime());
+				 */
+				calendar.addEntry(entry);
 			}
-			calendar.addEntries(entries);
 		}
+	}
+
+	public void populateReport() {
+		ReportDto dto = consultationService.findConsultationFor6Months();
+		txtTotalPatient.setText(String.valueOf(patients.size()));
+		txtMonthGain.setText(String.valueOf(dto.getCurrentMonthCharge()));
+		txtMonthlyConsultations.setText(String.valueOf(dto.getConsultationCount()));
+		
+	}
+	
+	public void downloadConsultations() {
+		FileChooser chooser = new FileChooser();
+		  
+        //Set extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Excel Files (*.xlsx)", "*.xlsx");
+        chooser.getExtensionFilters().add(extFilter);
+        File saveFile = chooser.showSaveDialog(mainTabs.getScene().getWindow());
+        if(saveFile != null){
+            consultationService.exportConsultation(saveFile);
+        }
 	}
 	
 	public CalendarSource initCalendars() {

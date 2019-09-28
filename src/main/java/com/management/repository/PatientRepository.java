@@ -11,4 +11,5 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
 	@Query(name = "SELECT * FROM PATIENT WHERE FIRST_NAME=? AND LAST_NAME=?",nativeQuery = true)
 	public Patient findByFirstNameAndLastName(String firstName, String lastName);
+	
 }

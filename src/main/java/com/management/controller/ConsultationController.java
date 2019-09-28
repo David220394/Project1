@@ -25,6 +25,8 @@ import com.management.entity.Consultation;
 import com.management.entity.ConsultationMedicine;
 import com.management.entity.FxmlView;
 import com.management.entity.Location;
+import com.management.entity.Medicine;
+import com.management.entity.MedicineEnum;
 import com.management.service.ConsultationService;
 
 import javafx.beans.value.ChangeListener;
@@ -33,11 +35,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 @Controller
@@ -186,29 +191,75 @@ public class ConsultationController  implements Initializable  {
 		vMedcine.getChildren().add(pane);
 	}
 	
-	public void onSubmit(ActionEvent event) {
+	public void printPrescription() {
 		List<ConsultationMedicineDTO> consultationMedicines = new ArrayList<>();
 		for (MedcineController med : medcines) {
 			consultationMedicines.add(med.getValues());
 		}
-		dto = new ConsultationDTO();
-		dto.setComplaints(txtComplaints.getText());
-		dto.setEars(txtEars.getText());
-		dto.setThroat(txtThroats.getText());
-		dto.setNeck(txtNeck.getText());
-		dto.setNose(txtNose.getText());
-		dto.setIlS(txtILS.getText());
-		dto.setDiagnosis(txtDiagnosis.getText());
-		dto.setCharge(Integer.parseInt(txtCharges.getText()));
-		dto.setStartDate(startDate);
-		dto.setStartTime(startTime);
-		dto.setEndDate(LocalDate.now());
-		dto.setEndTime(LocalTime.now());
-		dto.setLocation(location.getValue());
-		dto.setPatient(patient);
-		dto.setConsultationMedicines(consultationMedicines);
+		SpringFXMLLoader loader = stageManager.getSpringFXMLLoader();
+		Parent parent = stageManager.getParentView(FxmlView.PRESCRIPTION);
+		PrescriptionController dialogController = loader.getLoader()
+				.<PrescriptionController>getController();
+		dialogController.setPatient(patient);
+		dialogController.setcMdtos(consultationMedicines);
+		Scene scene = new Scene(parent);
+		Stage stage = new Stage();
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.setScene(scene);
+		stage.showAndWait();
+	}
+	
+	public void onSubmit(ActionEvent event) {
+		if(consultation != null) {
+			List<ConsultationMedicine> consultationMedicines = new ArrayList<>();
+			for (MedcineController med : medcines) {
+				ConsultationMedicineDTO medDto = med.getValues();
+				ConsultationMedicine cM = new ConsultationMedicine();
+				cM.setIntakeTimes(medDto.getIntakeTimes());
+				cM.setNoOfDays(medDto.getNoOfDays());
+				cM.setMedicine(new Medicine(medDto.getMedicine(), MedicineEnum.valueOf(medDto.getConsumption())));
+				consultationMedicines.add(cM);
+			}
+			consultation.setComplaints(txtComplaints.getText());
+			consultation.setEars(txtEars.getText());
+			consultation.setThroat(txtThroats.getText());
+			consultation.setNeck(txtNeck.getText());
+			consultation.setNose(txtNose.getText());
+			consultation.setIlS(txtILS.getText());
+			consultation.setDiagnosis(txtDiagnosis.getText());
+			consultation.setCharge(Integer.parseInt(txtCharges.getText()));
+			consultation.setStartDate(startDate);
+			consultation.setStartTime(startTime);
+			consultation.setEndDate(LocalDate.now());
+			consultation.setEndTime(LocalTime.now());
+			consultation.setConsultationMedicines(consultationMedicines);
+			consultationService.saveConsultation(consultation);
+		}else {
+			List<ConsultationMedicineDTO> consultationMedicines = new ArrayList<>();
+			for (MedcineController med : medcines) {
+				consultationMedicines.add(med.getValues());
+			}
+			dto = new ConsultationDTO();
+			dto.setComplaints(txtComplaints.getText());
+			dto.setEars(txtEars.getText());
+			dto.setThroat(txtThroats.getText());
+			dto.setNeck(txtNeck.getText());
+			dto.setNose(txtNose.getText());
+			dto.setIlS(txtILS.getText());
+			dto.setDiagnosis(txtDiagnosis.getText());
+			dto.setCharge(Integer.parseInt(txtCharges.getText()));
+			dto.setStartDate(startDate);
+			dto.setStartTime(startTime);
+			dto.setEndDate(LocalDate.now());
+			dto.setEndTime(LocalTime.now());
+			dto.setLocation(location.getValue());
+			dto.setPatient(patient);
+			dto.setConsultationMedicines(consultationMedicines);
+			
+			consultationService.saveConsultation(dto);
+		}
 		
-		consultationService.saveConsultation(dto);
+		
 		closeStage(event);
 	}
 	
