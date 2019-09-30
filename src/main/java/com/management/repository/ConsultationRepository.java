@@ -1,5 +1,7 @@
 package com.management.repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +17,6 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Long
 	public List<Consultation> findByPatient(Patient patient);
 	 
 	public List<Consultation> findByLocation(Location location);
+	
+	public Consultation findByStartDateAndStartTimeAndComplaintsAndDiagnosis(LocalDate startDate, LocalTime startTime, String conplaints, String diagnosis);
 }

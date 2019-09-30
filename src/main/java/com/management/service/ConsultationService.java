@@ -71,6 +71,7 @@ public class ConsultationService {
 		consultation.setStartTime(dto.getStartTime());
 		consultation.setEndDate(dto.getEndDate());
 		consultation.setEndTime(dto.getEndTime());
+		consultation.setTitle(p.getFirstName()+" | "+ p.getLastName());
 		consultation.setLocation(findLocationByName(dto.getLocation()));
 		consultation.setPatient(p);
 		
@@ -126,6 +127,10 @@ public class ConsultationService {
 	
 	public List<Consultation> findAllConsultations() {
 		return consultationRepository.findAll();
+	}
+	
+	public Consultation findByStartDateAndStartTimeAndComplaintsAndDiagnosis(LocalDate startDate, LocalTime startTime, String conplaints, String diagnosis) {
+		return consultationRepository.findByStartDateAndStartTimeAndComplaintsAndDiagnosis(startDate, startTime, conplaints, diagnosis);
 	}
 	
 	public ReportDto findConsultationFor6Months(){

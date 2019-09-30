@@ -46,7 +46,11 @@ public class JFXAutocompleteTextTField extends JFXTextField {
 	            populatePopup(searchResult);
 	            if (!entriesPopup.isShowing())
 	            {
-	              entriesPopup.show(JFXAutocompleteTextTField.this, Side.BOTTOM, 0, 0);
+	              try {
+					entriesPopup.show(JFXAutocompleteTextTField.this, Side.BOTTOM, 0, 0);
+				  } catch (Exception e) {
+					
+				  }
 	            }
 	          } else
 	          {

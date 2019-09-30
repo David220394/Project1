@@ -58,6 +58,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.AreaChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
@@ -109,7 +112,7 @@ public class HomeController implements Initializable {
     private Label txtMonthlyConsultations;
 
     @FXML
-    private AreaChart<?, ?> gainChart;
+    private AreaChart<String, Number> gainChart;
 
     @FXML
     private JFXButton btnImportPatient;
@@ -132,6 +135,8 @@ public class HomeController implements Initializable {
 	
 	private ObservableList<Patient> patients;
 
+	private ReportDto reportDto;
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
@@ -145,6 +150,7 @@ public class HomeController implements Initializable {
 			            	populatePatientList();
 			            }else if("administrationTab".equals(t1.idProperty().getValue())) {
 			            	populateReport();
+			            	initChart();
 			            }
 			        }
 			    }
@@ -264,6 +270,7 @@ public class HomeController implements Initializable {
 		            		ConsultationController dialogController = loader.getLoader()
 		            				.<ConsultationController>getController();
 		            		dialogController.setPatient(Converter.patientToDto(patient));
+		            		dialogController.setConsultation(c);
 		            		Scene scene = new Scene(parent);
 		            		Stage stage = new Stage();
 		            		stage.initModality(Modality.APPLICATION_MODAL);
@@ -323,6 +330,16 @@ public class HomeController implements Initializable {
 					}
 				});
 
+		firstName.getStyleClass().add("col-field");
+		lastName.getStyleClass().add("col-field");
+		age.getStyleClass().add("col-field");
+		lastVisitDate.getStyleClass().add("col-field");
+		phoneNumber.getStyleClass().add("col-field");
+		firstName.prefWidthProperty().bind(patientTableView.widthProperty().divide(3)); // w * 1/4
+		lastName.prefWidthProperty().bind(patientTableView.widthProperty().divide(3)); // w * 1/2
+		age.prefWidthProperty().bind(patientTableView.widthProperty().divide(10)); // w * 1/4
+		lastVisitDate.prefWidthProperty().bind(patientTableView.widthProperty().divide(5)); // w * 1/4
+		phoneNumber.prefWidthProperty().bind(patientTableView.widthProperty().divide(5)); // w * 1/4
 		patientTableView.getColumns().setAll(firstName, lastName, age, lastVisitDate, phoneNumber);
 	}
 
@@ -332,7 +349,7 @@ public class HomeController implements Initializable {
 		CalendarSource myCalendarSource = initCalendars();
 		calendarView.getCalendarSources().addAll(myCalendarSource);
 		calendarView.setRequestedTime(LocalTime.now());
-		
+		calendarView.setShowPrintButton(false);
 		populateEntry(myCalendarSource.getCalendars());
 		
 		Thread updateTimeThread = new Thread("Calendar: Update Time Thread") {
@@ -442,12 +459,39 @@ public class HomeController implements Initializable {
 	}
 
 	public void populateReport() {
-		ReportDto dto = consultationService.findConsultationFor6Months();
+		reportDto = consultationService.findConsultationFor6Months();
 		txtTotalPatient.setText(String.valueOf(patients.size()));
-		txtMonthGain.setText(String.valueOf(dto.getCurrentMonthCharge()));
-		txtMonthlyConsultations.setText(String.valueOf(dto.getConsultationCount()));
+		txtMonthGain.setText(String.valueOf(reportDto.getCurrentMonthCharge()));
+		txtMonthlyConsultations.setText(String.valueOf(reportDto.getConsultationCount()));
+	}
+	
+	public void initChart() {
+		int maxVal = 0;
+		if(reportDto.getMonth1Charge() > maxVal) { maxVal = reportDto.getMonth1Charge();}
+		if(reportDto.getMonth1Charge() > maxVal) { maxVal = reportDto.getMonth2Charge();}
+		if(reportDto.getMonth1Charge() > maxVal) { maxVal = reportDto.getMonth3Charge();}
+		if(reportDto.getMonth1Charge() > maxVal) { maxVal = reportDto.getMonth4Charge();}
+		if(reportDto.getMonth1Charge() > maxVal) { maxVal = reportDto.getMonth5Charge();}
+		
+		int minVal = (maxVal / 5) + (maxVal % 5);
+		CategoryAxis xAxis = new CategoryAxis();  
+        
+		//Defining the y Axis 
+		NumberAxis yAxis = new NumberAxis(); 
+		yAxis.setLabel("Total Charges (Rs.)");
+		gainChart = new AreaChart<>(xAxis, yAxis);
+		
+		XYChart.Series series1 = new XYChart.Series();  
+		series1.getData().add(new XYChart.Data(LocalDate.now().minusMonths(-5).getMonth(), reportDto.getMonth1Charge())); 
+		series1.getData().add(new XYChart.Data(LocalDate.now().minusMonths(-4).getMonth(), reportDto.getMonth2Charge())); 
+		series1.getData().add(new XYChart.Data(LocalDate.now().minusMonths(-3).getMonth(),  reportDto.getMonth3Charge())); 
+		series1.getData().add(new XYChart.Data(LocalDate.now().minusMonths(-2).getMonth(), reportDto.getMonth4Charge())); 
+		series1.getData().add(new XYChart.Data(LocalDate.now().minusMonths(-1).getMonth(), reportDto.getMonth5Charge())); 
+		
+		gainChart.getData().add(series1);
 		
 	}
+	
 	
 	public void downloadConsultations() {
 		FileChooser chooser = new FileChooser();

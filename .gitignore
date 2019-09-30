@@ -12,6 +12,7 @@ target/
 .settings
 .springBeans
 .sts4-cache
+jdk1.8.0_221/
 
 ### IntelliJ IDEA ###
 .idea

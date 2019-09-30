@@ -99,13 +99,18 @@ public class AddConsultationController  implements Initializable {
 	
 	public void onSubmit(ActionEvent event) {
 		if(patient.validate() & location.validate()) {
-			dto.setName(patient.getText());
-			dto.setLocation(location.getValue());
-			dto.setFrom(from.getText());
-			dto.setTo(to.getText());
-			Patient p = patientMaps.get(patient.getText());
-			dto.setPatient(p);
-			closeStage(event);
+			if(patient.getText().split(" ").length < 2) {
+				Notifications.create().darkStyle().title("Error").text("Patient must have a first name and last name").showError();
+			}else {
+				dto.setName(patient.getText());
+				dto.setLocation(location.getValue());
+				dto.setFrom(from.getText());
+				dto.setTo(to.getText());
+				Patient p = patientMaps.get(patient.getText());
+				dto.setPatient(p);
+				closeStage(event);
+			}
+			
 		}else {
 			Notifications.create().darkStyle().title("Error").text("Fill all required").showError();
 		}

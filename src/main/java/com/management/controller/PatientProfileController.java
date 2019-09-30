@@ -2,6 +2,7 @@ package com.management.controller;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ResourceBundle;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import com.management.controller.dto.PatientDTO;
 import com.management.entity.Consultation;
 import com.management.entity.FxmlView;
 import com.management.entity.Patient;
+import com.management.service.ConsultationService;
+import com.management.utility.Converter;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -34,6 +37,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableColumn.CellDataFeatures;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
@@ -47,6 +51,9 @@ public class PatientProfileController implements Initializable{
 	   	@Lazy
 	    @Autowired
 	    private StageManager stageManager;
+	   	
+	   	@Autowired
+	   	private ConsultationService consultationService;
 	
 	 	@FXML
 	    private AnchorPane pnlProfile;
@@ -88,6 +95,7 @@ public class PatientProfileController implements Initializable{
 	    private Button btnUpdatePatient;
 	    
 	    
+	    
 	    private PatientDTO patient;
 	    
 	    private ObservableList<Consultation> list = FXCollections.observableArrayList();
@@ -112,6 +120,18 @@ public class PatientProfileController implements Initializable{
 		initTableCol();
 		list = FXCollections.observableArrayList();
 		final TreeItem<Consultation> root = new RecursiveTreeItem<Consultation>(list, RecursiveTreeObject::getChildren);
+		
+		consultationTable.setRowFactory( tv -> {
+		    TreeTableRow<Consultation> row = new TreeTableRow<>();
+		    row.setOnMouseClicked(event -> {
+		        if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+		        	Consultation rowData = row.getItem();
+		        	openConsultation(rowData);
+		        }
+		    });
+		    return row ;
+		});
+		
 		consultationTable.setRoot(root);
 		consultationTable.setShowRoot(false);
 	}
@@ -179,6 +199,7 @@ public class PatientProfileController implements Initializable{
 		list.clear();
 		for (ConsultationDTO consultation : patient.getConsultations()) {
 			list.add(new Consultation(consultation.getStartDate().toString(), 
+										consultation.getStartTime().toString(),
 										consultation.getComplaints(), 
 										consultation.getDiagnosis(), 
 										consultation.getLocation(), 
@@ -199,16 +220,37 @@ public class PatientProfileController implements Initializable{
 		stage.showAndWait();
 	}
 	
+	public void openConsultation(Consultation c) {
+		com.management.entity.Consultation consultation = consultationService
+															.findByStartDateAndStartTimeAndComplaintsAndDiagnosis(LocalDate.parse(c.visitDate.get()), 
+																													LocalTime.parse(c.visitTime.get()), 
+																													c.complaint.get(), 
+																													c.diagnosis.get());
+		SpringFXMLLoader loader = stageManager.getSpringFXMLLoader();
+		Parent parent = stageManager.getParentView(FxmlView.CONSULTATION);
+		ConsultationController dialogController = loader.getLoader()
+				.<ConsultationController>getController();
+		dialogController.setPatient(patient);
+		dialogController.setConsultation(consultation);
+		Scene scene = new Scene(parent);
+		Stage stage = new Stage();
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.setScene(scene);
+		stage.showAndWait();
+	}
+	
 	class Consultation extends RecursiveTreeObject<Consultation> {
 		StringProperty visitDate;
+		StringProperty visitTime;
 		StringProperty complaint;
 		StringProperty diagnosis;
 		StringProperty location;
 		StringProperty charge;
 
-		public Consultation(String visitDate, String complaint, String diagnosis, String location, String charge) {
+		public Consultation(String visitDate,String visitTime, String complaint, String diagnosis, String location, String charge) {
 			super();
 			this.visitDate = new SimpleStringProperty(visitDate);
+			this.visitTime = new SimpleStringProperty(visitTime);
 			this.complaint = new SimpleStringProperty(complaint);
 			this.diagnosis = new SimpleStringProperty(diagnosis);
 			this.location = new SimpleStringProperty(location);

@@ -75,6 +75,7 @@ public class StageManager {
         Parent rootNode = null;
         try {
             rootNode = springFXMLLoader.load(fxmlFilePath);
+            //rootNode.getStylesheets().add(getClass().getResource("/static/"));
             Objects.requireNonNull(rootNode, "A Root FXML node must not be null");
         } catch (Exception exception) {
             logAndExit("Unable to load FXML view" + fxmlFilePath, exception);
