@@ -237,6 +237,7 @@ public class PatientProfileController implements Initializable{
 		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.setScene(scene);
 		stage.showAndWait();
+		dialogController.setConsultation(null);
 	}
 	
 	class Consultation extends RecursiveTreeObject<Consultation> {

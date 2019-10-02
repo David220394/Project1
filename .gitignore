@@ -13,6 +13,7 @@ target/
 .springBeans
 .sts4-cache
 jdk1.8.0_221/
+PatientManagement-0.0.1-SNAPSHOT/
 
 ### IntelliJ IDEA ###
 .idea

@@ -2,6 +2,8 @@ package com.management.controller;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ResourceBundle;
 
 import org.controlsfx.control.Notifications;
@@ -47,7 +49,7 @@ public class AddPatientController implements Initializable {
 	private JFXTextField phone;
 
 	@FXML
-	private JFXDatePicker dOB;
+	private JFXTextField dOB;
 
 	@FXML
 	private Button btnSubmit;
@@ -126,7 +128,7 @@ public class AddPatientController implements Initializable {
 			lName.setText(p.getLastName());
 		}
 		if(p.getDateOfBirth() != null) {
-			dOB.setValue(p.getDateOfBirth());
+			dOB.setText(p.getDateOfBirth().format(DateTimeFormatter.ofPattern("ddMMyyyy")));
 		}
 		if(p.getPhoneNumber() != 0) {
 			phone.setText(String.valueOf(p.getPhoneNumber()));
@@ -147,7 +149,7 @@ public class AddPatientController implements Initializable {
 			lName.setText(patientDto.getLastName());
 		}
 		if(patientDto.getDateOfBirth() != null) {
-			dOB.setValue(patientDto.getDateOfBirth());
+			dOB.setText(patientDto.getDateOfBirth().format(DateTimeFormatter.ofPattern("ddMMyyyy")));
 		}
 		if(patientDto.getPhoneNumber() != 0) {
 			phone.setText(String.valueOf(patientDto.getPhoneNumber()));
@@ -157,30 +159,34 @@ public class AddPatientController implements Initializable {
 
 	public void onSubmit(ActionEvent event) {
 		if (fName.validate() & lName.validate() & dOB.validate() & phone.validate()) {
-			Patient patient = new com.management.entity.Patient(fName.getText(), lName.getText(),
-					dOB.getValue(), Integer.parseInt(phone.getText()), LocalDate.now());
-			if(patientDto != null) {
-				Patient p1 = patientService.findByFirstNameAndLastName(patientDto.getFirstName(), patientDto.getLastName());
-				if(p1 != null) {
-					p1.setFirstName(fName.getText());
-					p1.setLastName(lName.getText());
-					p1.setDateOfBirth(dOB.getValue());
-					p1.setPhoneNumber(Integer.parseInt(phone.getText()));
-					p = patientService.savePatient(p1);
+			try {
+				Patient patient = new com.management.entity.Patient(fName.getText(), lName.getText(),
+						LocalDate.parse(dOB.getText(),DateTimeFormatter.ofPattern("ddMMyyyy")), Integer.parseInt(phone.getText()), LocalDate.now());
+				if(patientDto != null) {
+					Patient p1 = patientService.findByFirstNameAndLastName(patientDto.getFirstName(), patientDto.getLastName());
+					if(p1 != null) {
+						p1.setFirstName(fName.getText());
+						p1.setLastName(lName.getText());
+						p1.setDateOfBirth(LocalDate.parse(dOB.getText(),DateTimeFormatter.ofPattern("ddMMyyyy")));
+						p1.setPhoneNumber(Integer.parseInt(phone.getText()));
+						p = patientService.savePatient(p1);
+					}
+				}else {
+					p = patientService.savePatient(patient);
 				}
-			}else {
-				p = patientService.savePatient(patient);
-			}
-			
-			if (p == null) {
-				Notifications.create().darkStyle().title("Error")
-						.text("An Error occur while adding this patient; Please verify if this patient already exist")
-						.showError();
-			} else {
-				Notifications.create().darkStyle().title("INFO")
-						.text(fName.getText() + " " + lName.getText() + " was succesffuly added").showConfirm();
-				patientDto = Converter.patientToDto(p);
-				closeStage(event);
+				
+				if (p == null) {
+					Notifications.create().darkStyle().title("Error")
+							.text("An Error occur while adding this patient; Please verify if this patient already exist")
+							.showError();
+				} else {
+					Notifications.create().darkStyle().title("INFO")
+							.text(fName.getText() + " " + lName.getText() + " was succesffuly added").showConfirm();
+					patientDto = Converter.patientToDto(p);
+					closeStage(event);
+				}
+			} catch (DateTimeParseException  e) {
+				Notifications.create().darkStyle().title("Error").text("Incorrect Date Format").showError();
 			}
 		} else {
 			Notifications.create().darkStyle().title("Error").text("Fill all required").showError();

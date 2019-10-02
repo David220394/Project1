@@ -420,9 +420,12 @@ public class HomeController implements Initializable {
 					entry.changeStartTime(LocalTime.parse(appointmentDTO.getFrom()));
 					entry.changeEndDate(entry.getStartDate());
 					entry.changeEndTime(LocalTime.parse(appointmentDTO.getTo()));
-					consultationService.saveConsultationFromDto(appointmentDTO);
+					Consultation c = consultationService.saveConsultationFromDto(appointmentDTO);
 					if (control instanceof AllDayView) {
 						entry.setFullDay(true);
+					}
+					if(c != null) {
+						entry.setId(String.valueOf(c.getConsultationId()));
 					}
 				}
 				

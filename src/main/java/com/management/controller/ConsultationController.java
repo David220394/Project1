@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javax.management.Notification;
+
+import org.controlsfx.control.Notifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
@@ -142,9 +145,13 @@ public class ConsultationController  implements Initializable  {
 	public void initValidation() {
 		RequiredFieldValidator requiredValidator = new RequiredFieldValidator();
 		requiredValidator.setMessage("Input required");
+		NumberValidator numberValidator = new NumberValidator();
+		numberValidator.setMessage("Only Number Allow");
 
 		txtComplaints.getValidators().add(requiredValidator);
 		location.getValidators().add(requiredValidator);
+		txtCharges.getValidators().add(requiredValidator);
+		txtCharges.getValidators().add(numberValidator);
 
 		txtComplaints.focusedProperty().addListener(new ChangeListener<Boolean>() {
 
@@ -152,6 +159,16 @@ public class ConsultationController  implements Initializable  {
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 				if (!newValue) {
 					txtComplaints.validate();
+				}
+			}
+		});
+		
+		txtCharges.focusedProperty().addListener(new ChangeListener<Boolean>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				if (!newValue) {
+					txtCharges.validate();
 				}
 			}
 		});
@@ -210,57 +227,63 @@ public class ConsultationController  implements Initializable  {
 	}
 	
 	public void onSubmit(ActionEvent event) {
-		if(consultation != null) {
-			List<ConsultationMedicine> consultationMedicines = new ArrayList<>();
-			for (MedcineController med : medcines) {
-				ConsultationMedicineDTO medDto = med.getValues();
-				ConsultationMedicine cM = new ConsultationMedicine();
-				cM.setIntakeTimes(medDto.getIntakeTimes());
-				cM.setNoOfDays(medDto.getNoOfDays());
-				cM.setMedicine(new Medicine(medDto.getMedicine(), MedicineEnum.valueOf(medDto.getConsumption())));
-				consultationMedicines.add(cM);
+		if(location.validate() && txtComplaints.validate() && txtCharges.validate()) {
+			if(consultation != null) {
+				List<ConsultationMedicine> consultationMedicines = new ArrayList<>();
+				for (MedcineController med : medcines) {
+					ConsultationMedicineDTO medDto = med.getValues();
+					ConsultationMedicine cM = new ConsultationMedicine();
+					cM.setIntakeTimes(medDto.getIntakeTimes());
+					cM.setNoOfDays(medDto.getNoOfDays());
+					cM.setMedicine(new Medicine(medDto.getMedicine(), MedicineEnum.valueOf(medDto.getConsumption())));
+					consultationMedicines.add(cM);
+				}
+				consultation.setComplaints(txtComplaints.getText());
+				consultation.setEars(txtEars.getText());
+				consultation.setThroat(txtThroats.getText());
+				consultation.setNeck(txtNeck.getText());
+				consultation.setNose(txtNose.getText());
+				consultation.setIlS(txtILS.getText());
+				consultation.setDiagnosis(txtDiagnosis.getText());
+				consultation.setCharge(Integer.parseInt(txtCharges.getText()));
+				consultation.setStartDate(startDate);
+				consultation.setStartTime(startTime);
+				consultation.setEndDate(LocalDate.now());
+				consultation.setEndTime(LocalTime.now());
+				consultation.setConsultationMedicines(consultationMedicines);
+				consultationService.saveConsultation(consultation);
+			}else {
+				List<ConsultationMedicineDTO> consultationMedicines = new ArrayList<>();
+				for (MedcineController med : medcines) {
+					consultationMedicines.add(med.getValues());
+				}
+				dto = new ConsultationDTO();
+				dto.setComplaints(txtComplaints.getText());
+				dto.setEars(txtEars.getText());
+				dto.setThroat(txtThroats.getText());
+				dto.setNeck(txtNeck.getText());
+				dto.setNose(txtNose.getText());
+				dto.setIlS(txtILS.getText());
+				dto.setDiagnosis(txtDiagnosis.getText());
+				dto.setCharge(Integer.parseInt(txtCharges.getText()));
+				dto.setStartDate(startDate);
+				dto.setStartTime(startTime);
+				dto.setEndDate(LocalDate.now());
+				dto.setEndTime(LocalTime.now());
+				dto.setLocation(location.getValue());
+				dto.setPatient(patient);
+				dto.setConsultationMedicines(consultationMedicines);
+				
+				consultationService.saveConsultation(dto);
 			}
-			consultation.setComplaints(txtComplaints.getText());
-			consultation.setEars(txtEars.getText());
-			consultation.setThroat(txtThroats.getText());
-			consultation.setNeck(txtNeck.getText());
-			consultation.setNose(txtNose.getText());
-			consultation.setIlS(txtILS.getText());
-			consultation.setDiagnosis(txtDiagnosis.getText());
-			consultation.setCharge(Integer.parseInt(txtCharges.getText()));
-			consultation.setStartDate(startDate);
-			consultation.setStartTime(startTime);
-			consultation.setEndDate(LocalDate.now());
-			consultation.setEndTime(LocalTime.now());
-			consultation.setConsultationMedicines(consultationMedicines);
-			consultationService.saveConsultation(consultation);
-		}else {
-			List<ConsultationMedicineDTO> consultationMedicines = new ArrayList<>();
-			for (MedcineController med : medcines) {
-				consultationMedicines.add(med.getValues());
-			}
-			dto = new ConsultationDTO();
-			dto.setComplaints(txtComplaints.getText());
-			dto.setEars(txtEars.getText());
-			dto.setThroat(txtThroats.getText());
-			dto.setNeck(txtNeck.getText());
-			dto.setNose(txtNose.getText());
-			dto.setIlS(txtILS.getText());
-			dto.setDiagnosis(txtDiagnosis.getText());
-			dto.setCharge(Integer.parseInt(txtCharges.getText()));
-			dto.setStartDate(startDate);
-			dto.setStartTime(startTime);
-			dto.setEndDate(LocalDate.now());
-			dto.setEndTime(LocalTime.now());
-			dto.setLocation(location.getValue());
-			dto.setPatient(patient);
-			dto.setConsultationMedicines(consultationMedicines);
-			
-			consultationService.saveConsultation(dto);
+			closeStage(event);
 		}
 		
+		Notifications.create().darkStyle().title("Error")
+		.text("Location cannot be null")
+		.showError();
 		
-		closeStage(event);
+		
 	}
 	
 	public void onCancel(ActionEvent event) {

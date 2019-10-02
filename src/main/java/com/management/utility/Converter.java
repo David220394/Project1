@@ -8,6 +8,7 @@ import com.management.controller.dto.ConsultationMedicineDTO;
 import com.management.controller.dto.PatientDTO;
 import com.management.entity.Consultation;
 import com.management.entity.ConsultationMedicine;
+import com.management.entity.Location;
 import com.management.entity.Patient;
 
 public class Converter {
@@ -17,7 +18,11 @@ public class Converter {
 		for (ConsultationMedicine consultationMedicine : c.getConsultationMedicines()) {
 			mDtos.add(consultationMedicineToDto(consultationMedicine));
 		}
-		
+		Location l = c.getLocation();
+		String locName = null;
+		if(l != null) {
+			locName = l.getName();
+		}
 		ConsultationDTO dto = new ConsultationDTO(
 				c.getComplaints(),
 				c.getEars(),
@@ -31,7 +36,7 @@ public class Converter {
 				c.getStartTime(),
 				c.getEndDate(),
 				c.getEndTime(),
-				c.getLocation().getName(),
+				locName,
 				mDtos
 				);
 		return dto;
@@ -50,8 +55,10 @@ public class Converter {
 
 	public static PatientDTO patientToDto(Patient p) {
 		List<ConsultationDTO> cDtos = new ArrayList();
-		for (Consultation consultation : p.getConsultations()) {
-			cDtos.add(consultationToDto(consultation));
+		if(p.getConsultations() != null) {
+			for (Consultation consultation : p.getConsultations()) {
+				cDtos.add(consultationToDto(consultation));
+			}
 		}
 		PatientDTO dto = new PatientDTO();
 		dto.setFirstName(p.getFirstName());

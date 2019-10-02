@@ -4,13 +4,13 @@
 */
 
 * {
-    -fx-primary :  #02030A;
-    -fx-secondary : #fc0037;
-    -fx-primarytext : #FFFF8D;
+    -fx-primary :  #ffffff;
+    -fx-secondary : #000000;
+    -fx-primarytext : #000000;
     -fx-blue: #1976D2;
     -fx-red: #FF0000;
     -fx-color-1:#1976D2;
-	-fx-text: #ffd9d9;
+	-fx-text: #000000;
 }
 
 .root{

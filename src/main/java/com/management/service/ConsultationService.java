@@ -99,7 +99,7 @@ public class ConsultationService {
 		consultationRepository.save(consultation);
 	}
 	
-	public void saveConsultationFromDto(AppointmentDTO dto) {
+	public Consultation saveConsultationFromDto(AppointmentDTO dto) {
 		Consultation consultation = new Consultation();
 		if(dto.getPatient() != null) {
 			consultation.setPatient(dto.getPatient());
@@ -122,7 +122,7 @@ public class ConsultationService {
 		consultation.setEndDate(dto.getEndDate());
 		consultation.setEndTime(LocalTime.parse(dto.getTo()));
 		consultation.setLocation(l);
-		consultationRepository.save(consultation);
+		return consultationRepository.save(consultation);
 	}
 	
 	public List<Consultation> findAllConsultations() {
