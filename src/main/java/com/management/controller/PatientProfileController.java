@@ -20,6 +20,7 @@ import com.management.entity.Consultation;
 import com.management.entity.FxmlView;
 import com.management.entity.Patient;
 import com.management.service.ConsultationService;
+import com.management.service.PatientService;
 import com.management.utility.Converter;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -27,8 +28,10 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -54,6 +57,9 @@ public class PatientProfileController implements Initializable{
 	   	
 	   	@Autowired
 	   	private ConsultationService consultationService;
+	   	
+	   	@Autowired
+	   	private PatientService patientService;
 	
 	 	@FXML
 	    private AnchorPane pnlProfile;
@@ -75,6 +81,9 @@ public class PatientProfileController implements Initializable{
 
 	    @FXML
 	    private TreeTableColumn<Consultation, String> visitCol;
+	    
+	    @FXML
+	    private TreeTableColumn<Consultation, String> visitTimeCol;
 
 	    @FXML
 	    private TreeTableColumn<Consultation, String> complaintCol;
@@ -94,7 +103,8 @@ public class PatientProfileController implements Initializable{
 	    @FXML
 	    private Button btnUpdatePatient;
 	    
-	    
+	    @FXML
+	    private Button btnDeletePatient;
 	    
 	    private PatientDTO patient;
 	    
@@ -136,6 +146,18 @@ public class PatientProfileController implements Initializable{
 		consultationTable.setShowRoot(false);
 	}
 	
+	public void deletePatient(ActionEvent event) {
+		Patient p = patientService.findByFirstNameAndLastName(patient.getFirstName(), patient.getLastName());
+		patientService.deletePatient(p);
+		closeStage(event);
+	}
+	
+	private void closeStage(ActionEvent event) {
+        Node  source = (Node)  event.getSource(); 
+        Stage stage  = (Stage) source.getScene().getWindow();
+        stage.close();
+    }
+	
 	public void updatePatient() {
 		SpringFXMLLoader loader = stageManager.getSpringFXMLLoader();
 		Parent parent = stageManager.getParentView(FxmlView.REGISTRATION);
@@ -160,6 +182,14 @@ public class PatientProfileController implements Initializable{
 					@Override
 					public ObservableValue<String> call(CellDataFeatures<Consultation, String> param) {
 						return param.getValue().getValue().visitDate;
+					}
+				});
+		
+		visitTimeCol.setCellValueFactory(
+				new Callback<TreeTableColumn.CellDataFeatures<Consultation, String>, ObservableValue<String>>() {
+					@Override
+					public ObservableValue<String> call(CellDataFeatures<Consultation, String> param) {
+						return param.getValue().getValue().visitTime;
 					}
 				});
 		complaintCol.setCellValueFactory(
@@ -218,6 +248,15 @@ public class PatientProfileController implements Initializable{
 		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.setScene(scene);
 		stage.showAndWait();
+		ConsultationDTO consultation = dialogController.getDto();
+		if(consultation != null) {
+			list.add(new Consultation(consultation.getStartDate().toString(), 
+					consultation.getStartTime().toString(),
+					consultation.getComplaints(), 
+					consultation.getDiagnosis(), 
+					consultation.getLocation(), 
+					String.valueOf(consultation.getCharge())));
+		}
 	}
 	
 	public void openConsultation(Consultation c) {

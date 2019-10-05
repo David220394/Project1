@@ -160,36 +160,48 @@ public class AddPatientController implements Initializable {
 	public void onSubmit(ActionEvent event) {
 		if (fName.validate() & lName.validate() & dOB.validate() & phone.validate()) {
 			try {
-				Patient patient = new com.management.entity.Patient(fName.getText(), lName.getText(),
-						LocalDate.parse(dOB.getText(),DateTimeFormatter.ofPattern("ddMMyyyy")), Integer.parseInt(phone.getText()), LocalDate.now());
-				if(patientDto != null) {
-					Patient p1 = patientService.findByFirstNameAndLastName(patientDto.getFirstName(), patientDto.getLastName());
-					if(p1 != null) {
-						p1.setFirstName(fName.getText());
-						p1.setLastName(lName.getText());
-						p1.setDateOfBirth(LocalDate.parse(dOB.getText(),DateTimeFormatter.ofPattern("ddMMyyyy")));
-						p1.setPhoneNumber(Integer.parseInt(phone.getText()));
-						p = patientService.savePatient(p1);
+				String date = dOB.getText();
+				if(date.length() == 6) {
+					if(date.charAt(4) == '9') {
+						date = date.substring(0,4) + "19" + date.substring(4,date.length());
+					}else {
+						date = date.substring(0,4) + "19" + date.substring(4,date.length());
+					}
+					Patient patient = new com.management.entity.Patient(fName.getText(), lName.getText(),
+							LocalDate.parse(date,DateTimeFormatter.ofPattern("ddMMyyyy")), Integer.parseInt(phone.getText()), LocalDate.now());
+					if(patientDto != null) {
+						Patient p1 = patientService.findByFirstNameAndLastName(patientDto.getFirstName(), patientDto.getLastName());
+						if(p1 != null) {
+							p1.setFirstName(fName.getText());
+							p1.setLastName(lName.getText());
+							p1.setDateOfBirth(LocalDate.parse(date,DateTimeFormatter.ofPattern("ddMMyyyy")));
+							p1.setPhoneNumber(Integer.parseInt(phone.getText()));
+							p1.setLastVisitDate(LocalDate.now());
+							p = patientService.savePatient(p1);
+						}
+					}else {
+						p = patientService.savePatient(patient);
+					}
+					
+					if (p == null) {
+						Notifications.create().title("Error")
+								.text("An Error occur while adding this patient; Please verify if this patient already exist")
+								.showError();
+					} else {
+						Notifications.create().title("INFO")
+								.text(fName.getText() + " " + lName.getText() + " was succesffuly added").showConfirm();
+						patientDto = Converter.patientToDto(p);
+						closeStage(event);
 					}
 				}else {
-					p = patientService.savePatient(patient);
+					Notifications.create().title("Error").text("Review Date Format").showError();
 				}
 				
-				if (p == null) {
-					Notifications.create().darkStyle().title("Error")
-							.text("An Error occur while adding this patient; Please verify if this patient already exist")
-							.showError();
-				} else {
-					Notifications.create().darkStyle().title("INFO")
-							.text(fName.getText() + " " + lName.getText() + " was succesffuly added").showConfirm();
-					patientDto = Converter.patientToDto(p);
-					closeStage(event);
-				}
 			} catch (DateTimeParseException  e) {
-				Notifications.create().darkStyle().title("Error").text("Incorrect Date Format").showError();
+				Notifications.create().title("Error").text("Incorrect Date Format").showError();
 			}
 		} else {
-			Notifications.create().darkStyle().title("Error").text("Fill all required").showError();
+			Notifications.create().title("Error").text("Fill all required").showError();
 		}
 
 	}

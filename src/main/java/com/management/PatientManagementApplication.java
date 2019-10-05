@@ -37,7 +37,6 @@ public class PatientManagementApplication extends javafx.application.Application
 	    @Override
 	    public void start(Stage primaryStage) throws Exception {
 	        stageManager = springContext.getBean(StageManager.class, primaryStage);
-	        primaryStage.resizableProperty().set(false);
 	        displayInitialScene();
 	    }
 

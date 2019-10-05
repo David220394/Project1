@@ -1,5 +1,9 @@
 package com.management.controller;
 
+import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
 import java.io.File;
 import java.net.URL;
 import java.time.DayOfWeek;
@@ -13,6 +17,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
+import org.controlsfx.control.Notifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
@@ -142,6 +147,8 @@ public class HomeController implements Initializable {
 
 		initTable();
 		initCalendar();
+        calendarView.setMinWidth(1080);
+        calendarView.setMinHeight(600);
 		mainTabs.getSelectionModel().selectedItemProperty().addListener(
 			    new ChangeListener<Tab>() {
 			        @Override
@@ -269,7 +276,12 @@ public class HomeController implements Initializable {
 		            		Parent parent = stageManager.getParentView(FxmlView.CONSULTATION);
 		            		ConsultationController dialogController = loader.getLoader()
 		            				.<ConsultationController>getController();
-		            		dialogController.setPatient(Converter.patientToDto(patient));
+		            		if(patient != null) {
+		            			dialogController.setPatient(Converter.patientToDto(patient));
+		            		}else {
+		            			dialogController.setPatient(null);
+		            		}
+		            		
 		            		dialogController.setConsultation(c);
 		            		Scene scene = new Scene(parent);
 		            		Stage stage = new Stage();
@@ -402,32 +414,39 @@ public class HomeController implements Initializable {
 				} else {
 					time = upperTime;
 				}
-				SpringFXMLLoader loader = stageManager.getSpringFXMLLoader();
-				Parent parent = stageManager.getParentView(FxmlView.NEW_APPOINTMENT);
-				AddConsultationController dialogController = loader.getLoader()
-						.<AddConsultationController>getController();
-				dialogController.setTimes(time.toLocalTime().toString(), time.toLocalTime().plusHours(1).toString(), time.toLocalDate(),time.toLocalDate());
-				Scene scene = new Scene(parent);
-				Stage stage = new Stage();
-				stage.initModality(Modality.APPLICATION_MODAL);
-				stage.setScene(scene);
-				stage.showAndWait();
-				AppointmentDTO appointmentDTO = dialogController.getDto();
-				if (appointmentDTO != null && appointmentDTO.getName() != null && appointmentDTO.getName().length() > 0) {
-					entry = new Entry<>();
-					entry.setTitle(appointmentDTO.getName());
-					entry.changeStartDate(time.toLocalDate());
-					entry.changeStartTime(LocalTime.parse(appointmentDTO.getFrom()));
-					entry.changeEndDate(entry.getStartDate());
-					entry.changeEndTime(LocalTime.parse(appointmentDTO.getTo()));
-					Consultation c = consultationService.saveConsultationFromDto(appointmentDTO);
-					if (control instanceof AllDayView) {
-						entry.setFullDay(true);
+				ZonedDateTime now = ZonedDateTime.now();
+				if(now.isBefore(time)) {
+					SpringFXMLLoader loader = stageManager.getSpringFXMLLoader();
+					Parent parent = stageManager.getParentView(FxmlView.NEW_APPOINTMENT);
+					AddConsultationController dialogController = loader.getLoader()
+							.<AddConsultationController>getController();
+					dialogController.setTimes(time.toLocalTime().toString(), time.toLocalTime().plusMinutes(30).toString(), time.toLocalDate(),time.toLocalDate());
+					Scene scene = new Scene(parent);
+					Stage stage = new Stage();
+					stage.initModality(Modality.APPLICATION_MODAL);
+					stage.setScene(scene);
+					stage.showAndWait();
+					AppointmentDTO appointmentDTO = dialogController.getDto();
+					if (appointmentDTO != null && appointmentDTO.getName() != null && appointmentDTO.getName().length() > 0) {
+						entry = new Entry<>();
+						entry.setTitle(appointmentDTO.getName());
+						entry.changeStartDate(time.toLocalDate());
+						entry.changeStartTime(appointmentDTO.getFrom());
+						entry.changeEndDate(entry.getStartDate());
+						entry.changeEndTime(appointmentDTO.getTo());
+						Consultation c = consultationService.saveConsultationFromDto(appointmentDTO);
+						if (control instanceof AllDayView) {
+							entry.setFullDay(true);
+						}
+						if(c != null) {
+							entry.setId(String.valueOf(c.getConsultationId()));
+						}
 					}
-					if(c != null) {
-						entry.setId(String.valueOf(c.getConsultationId()));
-					}
+				}else {
+					Notifications.create().title("Error").text("Date Time must be in the future").showError();
 				}
+				
+				
 				
 				return entry;
 			}

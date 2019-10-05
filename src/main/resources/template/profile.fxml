@@ -4,21 +4,32 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TreeTableColumn?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="pnlProfile" stylesheets="@../static/dark-theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.management.controller.PatientProfileController">
    <children>
       <VBox AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label text="Patient Profile" textFill="#e7e5e5">
+            <Label text="Patient Profile">
                <font>
                   <Font size="34.0" />
                </font>
+               <textFill>
+					<LinearGradient endX="0.4904761904761905" endY="0.1476190476190476" startX="0.49047619047619045" startY="0.5761904761904761">
+					   <stops>
+						  <Stop color="#00d7eb" />
+						  <Stop color="#0e2bd3" offset="1.0" />
+					   </stops>
+					</LinearGradient>
+				</textFill>
             </Label>
           <AnchorPane minHeight="0.0" minWidth="0.0">
                <children>
@@ -29,7 +40,7 @@
                               <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
                               <VBox>
                                  <children>
-                                    <Label fx:id="fName" text="Full Name" textFill="#f5f4f4">
+                                    <Label fx:id="fName" text="Full Name">
                                        <font>
                                           <Font size="35.0" />
                                        </font>
@@ -37,7 +48,7 @@
                                           <Insets bottom="5.0" left="10.0" right="10.0" top="10.0" />
                                        </VBox.margin>
                                     </Label>
-                                    <Label fx:id="age" text="Age" textFill="#f2f2f2">
+                                    <Label fx:id="age" text="Age" textFill="#030303">
                                        <font>
                                           <Font size="20.0" />
                                        </font>
@@ -45,7 +56,7 @@
                                           <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                                        </VBox.margin>
                                     </Label>
-                                    <Label fx:id="phone" text="Phone" textFill="#f8f4f4">
+                                    <Label fx:id="phone" text="Phone">
                                        <font>
                                           <Font size="21.0" />
                                        </font>
@@ -62,21 +73,27 @@
                                  <children>
                                     <Button fx:id="btnAddConsultation" layoutX="155.0" layoutY="167.0" mnemonicParsing="false" onAction="#addConsultation" text="Add" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" />
                                     <Button fx:id="btnUpdatePatient" layoutX="148.0" layoutY="2.0" mnemonicParsing="false" onAction="#updatePatient" text="Edit" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                                    <Button fx:id="btnDeletePatient" layoutX="135.0" layoutY="48.0" mnemonicParsing="false" onAction="#deletePatient" text="Delete" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="50.0" />
                                  </children>
                               </AnchorPane>
                            </children>
                         </HBox>
                         <AnchorPane fx:id="consultationPane" prefHeight="200.0" prefWidth="200.0">
                            <children>
-                              <JFXTreeTableView fx:id="consultationTable" style="-fx-background-color: #02030A;" stylesheets="@../static/dark-theme.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                 <columns>
-                                    <TreeTableColumn fx:id="visitCol" prefWidth="94.0" styleClass="col-field" text="Visit Date" />
-                                    <TreeTableColumn fx:id="complaintCol" prefWidth="150.0" styleClass="col-field" text="Complaint" />
-                                    <TreeTableColumn fx:id="diagnosisCol" prefWidth="184.0" styleClass="col-field" text="Diagnosis" />
-                                    <TreeTableColumn fx:id="locationCol" prefWidth="120.0" styleClass="col-field" text="Location" />
-                                    <TreeTableColumn fx:id="chargeCol" prefWidth="70.0" styleClass="col-field" text="Charge" />
-                                 </columns>
-                              </JFXTreeTableView>
+                              <ScrollPane AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <content>
+                                    <JFXTreeTableView fx:id="consultationTable" stylesheets="@../static/dark-theme.css">
+                                       <columns>
+                                          <TreeTableColumn fx:id="visitCol" prefWidth="94.0" styleClass="col-field" text="Visit Date" />
+                                          <TreeTableColumn fx:id="visitTimeCol" prefWidth="94.0" styleClass="col-field" text="Visit Time" />
+                                          <TreeTableColumn fx:id="complaintCol" prefWidth="150.0" styleClass="col-field" text="Complaint" />
+                                          <TreeTableColumn fx:id="diagnosisCol" prefWidth="107.0" styleClass="col-field" text="Diagnosis" />
+                                          <TreeTableColumn fx:id="locationCol" prefWidth="197.0" styleClass="col-field" text="Location" />
+                                          <TreeTableColumn fx:id="chargeCol" prefWidth="70.0" styleClass="col-field" text="Charge" />
+                                       </columns>
+                                    </JFXTreeTableView>
+                                 </content>
+                              </ScrollPane>
                            </children>
                         </AnchorPane>
                      </children>

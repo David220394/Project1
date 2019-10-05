@@ -46,7 +46,8 @@ public class Converter {
 	public static ConsultationMedicineDTO consultationMedicineToDto(ConsultationMedicine cM) {
 		ConsultationMedicineDTO dto = new ConsultationMedicineDTO(
 				cM.getMedicine().getMedicineName(),
-				cM.getNoOfDays(),
+				cM.getDosage(),
+				cM.getPeriod(),
 				cM.getMedicine().getConsumption().name(),
 				cM.getIntakeTimes()
 				);

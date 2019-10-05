@@ -106,9 +106,12 @@ public class PrescriptionController implements Initializable  {
 
 	public void loadData() {
 		list.clear();
-		for (com.management.controller.dto.ConsultationMedicineDTO dto : cMdtos) {
-			list.add(new ConsultationMedicineDTO(dto.getMedicine(),dto.getIntakeTimes(),dto.getNoOfDays()));
-		}
+		/*
+		 * for (com.management.controller.dto.ConsultationMedicineDTO dto : cMdtos) {
+		 * list.add(new
+		 * ConsultationMedicineDTO(dto.getMedicine(),dto.getIntakeTimes(),dto.
+		 * getNoOfDays())); }
+		 */
 	}
     
 	public void initTableCol() {
@@ -204,13 +207,13 @@ public class PrescriptionController implements Initializable  {
             else
             {
                 // Write Error Message
-                Notifications.create().darkStyle().title("Error").text("Printing failed.");
+                Notifications.create().title("Error").text("Printing failed.");
             }
         } 
         else
         {
             // Write Error Message
-        	Notifications.create().darkStyle().title("Error").text("Could not create a printer job.");
+        	Notifications.create().title("Error").text("Could not create a printer job.");
         }
 
                 

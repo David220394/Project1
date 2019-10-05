@@ -3,17 +3,19 @@ package com.management.controller.dto;
 public class ConsultationMedicineDTO {
 
 private String medicine;
-	private int noOfDays;
+	private String period;
+	private String dosage;
 	private String consumption;
 	private int intakeTimes;
 	
 	public ConsultationMedicineDTO() {
 		super();
 	}
-	public ConsultationMedicineDTO(String medicine,int noOfDays, String consumption, int intakeTimes) {
+	public ConsultationMedicineDTO(String medicine,String dosage,String period, String consumption, int intakeTimes) {
 		super();
 		this.medicine = medicine;
-		this.noOfDays = noOfDays;
+		this.dosage = dosage;
+		this.period = period;
 		this.consumption = consumption;
 		this.intakeTimes = intakeTimes;
 	}
@@ -24,12 +26,6 @@ private String medicine;
 		this.medicine = medicine;
 	}
 	
-	public int getNoOfDays() {
-		return noOfDays;
-	}
-	public void setNoOfDays(int noOfDays) {
-		this.noOfDays = noOfDays;
-	}
 	public String getConsumption() {
 		return consumption;
 	}
@@ -42,6 +38,20 @@ private String medicine;
 	public void setIntakeTimes(int intakeTimes) {
 		this.intakeTimes = intakeTimes;
 	}
+	public String getPeriod() {
+		return period;
+	}
+	public void setPeriod(String period) {
+		this.period = period;
+	}
+	public String getDosage() {
+		return dosage;
+	}
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
+	}
+	
+	
 	
 	
 }

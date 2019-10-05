@@ -28,19 +28,22 @@ public class ConsultationMedicine {
 	@Column(name = "INTAKE_PER_DAY")
 	private int intakeTimes;
 	
-	@Column(name = "NO_OF_DAYS")
-	private int noOfDays;
+	@Column(name = "PERIOD")
+	private String period;
+	
+	@Column(name="DOSAGE")
+	private String dosage;
 
 	public ConsultationMedicine() {
 		super();
 	}
 
-	public ConsultationMedicine(Consultation consultation, Medicine medicine, int intakeTimes, int noOfDays) {
+	public ConsultationMedicine(Consultation consultation, Medicine medicine, int intakeTimes,  String period) {
 		super();
 		this.consultation = consultation;
 		this.medicine = medicine;
 		this.intakeTimes = intakeTimes;
-		this.noOfDays = noOfDays;
+		this.period = period;
 	}
 
 	public long getId() {
@@ -75,13 +78,20 @@ public class ConsultationMedicine {
 		this.intakeTimes = intakeTimes;
 	}
 
-	public int getNoOfDays() {
-		return noOfDays;
+	public String getPeriod() {
+		return period;
 	}
 
-	public void setNoOfDays(int noOfDays) {
-		this.noOfDays = noOfDays;
+	public void setPeriod(String period) {
+		this.period = period;
 	}
 
+	public String getDosage() {
+		return dosage;
+	}
+
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
+	}
 	
 }

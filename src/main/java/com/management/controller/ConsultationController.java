@@ -101,6 +101,9 @@ public class ConsultationController  implements Initializable  {
     private Button btnAdd;
 
     @FXML
+    private Button btnRemove;
+    
+    @FXML
     private JFXTextField txtCharges;
 
     @FXML
@@ -138,6 +141,9 @@ public class ConsultationController  implements Initializable  {
 		
 		for (Location l : locations) {
 			location.getItems().add(l.getName());
+		}
+		if(medcines.size() == 0) {
+			btnRemove.setVisible(false);
 		}
 		initValidation();
 	}
@@ -190,12 +196,21 @@ public class ConsultationController  implements Initializable  {
 	}
 	
 	public void addMedcine() {
+		btnRemove.setVisible(true);
 		SpringFXMLLoader loader = stageManager.getSpringFXMLLoader();
 		Pane pane = stageManager.loadPane(FxmlView.MEDICINE.getFxmlFile());
 		MedcineController controller = loader.getLoader()
 				.<MedcineController>getController();
 		medcines.add(controller);
 		vMedcine.getChildren().add(pane);
+	}
+	
+	public void removeMedcine() {
+		medcines.remove(medcines.size()-1);
+		vMedcine.getChildren().remove(vMedcine.getChildren().size()-1);
+		if(medcines.size() == 0) {
+			btnRemove.setVisible(false);
+		}
 	}
 	
 	public void addMedcine(ConsultationMedicine medicine) {
@@ -227,14 +242,18 @@ public class ConsultationController  implements Initializable  {
 	}
 	
 	public void onSubmit(ActionEvent event) {
-		if(location.validate() && txtComplaints.validate() && txtCharges.validate()) {
+	SUBMIT: if(location.validate() && txtComplaints.validate() && txtCharges.validate()) {
 			if(consultation != null) {
 				List<ConsultationMedicine> consultationMedicines = new ArrayList<>();
 				for (MedcineController med : medcines) {
 					ConsultationMedicineDTO medDto = med.getValues();
+					if(medDto == null) {
+						break SUBMIT;
+					}
 					ConsultationMedicine cM = new ConsultationMedicine();
 					cM.setIntakeTimes(medDto.getIntakeTimes());
-					cM.setNoOfDays(medDto.getNoOfDays());
+					cM.setDosage(medDto.getDosage());
+					cM.setPeriod(medDto.getPeriod());
 					cM.setMedicine(new Medicine(medDto.getMedicine(), MedicineEnum.valueOf(medDto.getConsumption())));
 					consultationMedicines.add(cM);
 				}
@@ -255,6 +274,9 @@ public class ConsultationController  implements Initializable  {
 			}else {
 				List<ConsultationMedicineDTO> consultationMedicines = new ArrayList<>();
 				for (MedcineController med : medcines) {
+					if(med.getValues() == null) {
+						break SUBMIT;
+					}
 					consultationMedicines.add(med.getValues());
 				}
 				dto = new ConsultationDTO();
@@ -277,11 +299,13 @@ public class ConsultationController  implements Initializable  {
 				consultationService.saveConsultation(dto);
 			}
 			closeStage(event);
+		}else {
+			Notifications.create().title("Error")
+			.text("Fill all required")
+			.showError();
 		}
 		
-		Notifications.create().darkStyle().title("Error")
-		.text("Location cannot be null")
-		.showError();
+		
 		
 		
 	}
@@ -310,10 +334,16 @@ public class ConsultationController  implements Initializable  {
 
 	public void setPatient(PatientDTO patient) {
 		this.patient = patient;
-		fName.setText(patient.getFirstName() + " " + patient.getLastName());
-		if(patient.getDateOfBirth() != null) {
-			age.setText(String.valueOf(LocalDate.now().getYear() - patient.getDateOfBirth().getYear()));
+		if(patient != null) {
+			fName.setText(patient.getFirstName() + " " + patient.getLastName());
+			if(patient.getDateOfBirth() != null) {
+				age.setText(String.valueOf(LocalDate.now().getYear() - patient.getDateOfBirth().getYear()));
+			}
+		}else {
+			fName.setText("Unknown");
+			age.setText("Unknown");
 		}
+		
 	}
 
 	
@@ -343,6 +373,16 @@ public class ConsultationController  implements Initializable  {
 			}
 		}
 	}
+
+	public ConsultationDTO getDto() {
+		return dto;
+	}
+
+	public void setDto(ConsultationDTO dto) {
+		this.dto = dto;
+	}
+	
+	
 	
 	
 

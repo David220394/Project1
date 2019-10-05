@@ -1,6 +1,7 @@
 package com.management.controller.dto;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import com.management.entity.Patient;
 
@@ -10,9 +11,9 @@ public class AppointmentDTO {
 	
 	private String location;
 	
-	private String from;
+	private LocalTime from;
 	
-	private String to;
+	private LocalTime to;
 	
 	private LocalDate endDate;
 	
@@ -36,19 +37,19 @@ public class AppointmentDTO {
 		this.location = location;
 	}
 
-	public String getFrom() {
+	public LocalTime getFrom() {
 		return from;
 	}
 
-	public void setFrom(String from) {
+	public void setFrom(LocalTime from) {
 		this.from = from;
 	}
 
-	public String getTo() {
+	public LocalTime getTo() {
 		return to;
 	}
 
-	public void setTo(String to) {
+	public void setTo(LocalTime to) {
 		this.to = to;
 	}
 

@@ -2,6 +2,8 @@ package com.management.controller;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +12,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.controlsfx.control.Notifications;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
@@ -100,19 +103,25 @@ public class AddConsultationController  implements Initializable {
 	public void onSubmit(ActionEvent event) {
 		if(patient.validate() & location.validate()) {
 			if(patient.getText().split(" ").length < 2) {
-				Notifications.create().darkStyle().title("Error").text("Patient must have a first name and last name").showError();
+				Notifications.create().title("Error").text("Patient must have a first name and last name").showError();
 			}else {
-				dto.setName(patient.getText());
-				dto.setLocation(location.getValue());
-				dto.setFrom(from.getText());
-				dto.setTo(to.getText());
-				Patient p = patientMaps.get(patient.getText());
-				dto.setPatient(p);
-				closeStage(event);
+				try {
+					LocalTime startTime = LocalTime.parse(from.getText());
+					LocalTime endTime = LocalTime.parse(to.getText());
+					dto.setName(patient.getText());
+					dto.setLocation(location.getValue());
+					dto.setFrom(startTime);
+					dto.setTo(endTime);
+					Patient p = patientMaps.get(patient.getText());
+					dto.setPatient(p);
+					closeStage(event);
+				} catch (DateTimeParseException e) {
+					Notifications.create().title("Error").text("Invalid Time format").showError();
+				}
 			}
 			
 		}else {
-			Notifications.create().darkStyle().title("Error").text("Fill all required").showError();
+			Notifications.create().title("Error").text("Fill all required").showError();
 		}
 		
 	}

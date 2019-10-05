@@ -88,8 +88,9 @@ public class ConsultationService {
 			ConsultationMedicine cM = new ConsultationMedicine();
 			cM.setConsultation(consultation);
 			cM.setMedicine(medicine);
+			cM.setDosage(cMDto.getDosage());
 			cM.setIntakeTimes(cMDto.getIntakeTimes());
-			cM.setNoOfDays(cMDto.getNoOfDays());
+			cM.setPeriod(cMDto.getPeriod());
 			consultationMedicineRepository.save(cM);
 		}
 	}
@@ -118,10 +119,11 @@ public class ConsultationService {
 		Location l = locationRepository.findByName(dto.getLocation());
 		consultation.setTitle(dto.getName());
 		consultation.setStartDate(dto.getStartDate());
-		consultation.setStartTime(LocalTime.parse(dto.getFrom()));
+		consultation.setStartTime(dto.getFrom());
 		consultation.setEndDate(dto.getEndDate());
-		consultation.setEndTime(LocalTime.parse(dto.getTo()));
+		consultation.setEndTime(dto.getTo());
 		consultation.setLocation(l);
+		consultation.setTitle(dto.getName());
 		return consultationRepository.save(consultation);
 	}
 	
@@ -178,6 +180,7 @@ public class ConsultationService {
         int c = 0;
         Row r = sheet.createRow(rowNum++);
         r.createCell(c++).setCellValue((String) "Date");
+        r.createCell(c++).setCellValue((String) "Time");
         r.createCell(c++).setCellValue((String) "Patient");
         r.createCell(c++).setCellValue((String) "Location");
         r.createCell(c++).setCellValue((String) "Complaints");
@@ -192,6 +195,7 @@ public class ConsultationService {
 			Row row = sheet.createRow(rowNum++);
             int colNum = 0;
             row.createCell(colNum++).setCellValue((String) consultation.getStartDate().toString());
+            row.createCell(colNum++).setCellValue((String) consultation.getStartTime().toString());
             row.createCell(colNum++).setCellValue((String) consultation.getPatient().getFirstName() + " " +consultation.getPatient().getLastName());
             row.createCell(colNum++).setCellValue((String) consultation.getLocation().getName());
             row.createCell(colNum++).setCellValue((String) consultation.getComplaints());

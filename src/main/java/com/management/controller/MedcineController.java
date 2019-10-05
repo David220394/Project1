@@ -36,6 +36,9 @@ public class MedcineController  implements Initializable {
     private JFXAutocompleteTextTField txtMedcine;
 
     @FXML
+    private JFXTextField txtDosage;
+
+    @FXML
     private JFXTextField txtNoPerDay;
 
     @FXML
@@ -43,14 +46,19 @@ public class MedcineController  implements Initializable {
 
     @FXML
     private JFXTextField txtDays;
+
+    @FXML
+    private JFXComboBox<String> txtPeriod;
     
     @Autowired
     private MedicineService service;
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		String[] values = {"BEFORE_MEAL","AFTER_MEAL","DURING_MEAL"};
+		String[] values = {"","BEFORE_MEAL","AFTER_MEAL"};
 		txtConsumption.getItems().addAll(values);
+		String[] values1 = {"DAYS","MONTHS"};
+		txtPeriod.getItems().addAll(values1);
 		List<String> medicines = service.findAllMedicineName();
 		SortedSet<String> entries = new TreeSet<>();
 		for (String medicine : medicines) {
@@ -61,17 +69,38 @@ public class MedcineController  implements Initializable {
 	}
 	
 	public void setConsultationMedicine(ConsultationMedicine medicine) {
+		String period = "MONTHS";
+		String freq = "";
+		if(medicine.getPeriod() != null && medicine.getPeriod().contains("DAYS")) {
+			freq = medicine.getPeriod().replace(" DAYS", "");
+			period = "DAYS";
+		}else {
+			freq = medicine.getPeriod().replace(" MONTHS", "");
+		}
 		txtMedcine.setText(medicine.getMedicine().getMedicineName());
+		txtDosage.setText(medicine.getDosage());
 		txtNoPerDay.setText(String.valueOf(medicine.getIntakeTimes()));
 		txtConsumption.setValue(medicine.getMedicine().getConsumption().name());
-		txtDays.setText(String.valueOf(medicine.getNoOfDays()));
+		txtDays.setText(freq);
+		txtPeriod.setValue(period);
 	}
 	
 	public ConsultationMedicineDTO getValues() {
-		return new ConsultationMedicineDTO(txtMedcine.getText(),
-											Integer.parseInt(txtDays.getText()), 
-											txtConsumption.getValue(), 
-											Integer.parseInt(txtNoPerDay.getText()));
+		if(txtMedcine.validate() &
+			txtDosage.validate() &
+			txtNoPerDay.validate() &
+			txtDays.validate() &
+			txtPeriod.validate()) {
+			String period = txtDays.getText()+" "+txtPeriod.getValue();
+			return new ConsultationMedicineDTO(txtMedcine.getText(),
+												txtDosage.getText(),
+												period, 
+												txtConsumption.getValue(), 
+												Integer.parseInt(txtNoPerDay.getText()));
+		}else {
+			return null;
+		}
+		
 	}
 	
 	public void initValidation() {
@@ -82,12 +111,14 @@ public class MedcineController  implements Initializable {
 		numberValidator.setMessage("Only Number Allow");
 
 		txtMedcine.getValidators().add(requiredValidator);
-		txtConsumption.getValidators().add(requiredValidator);
 		txtNoPerDay.getValidators().add(requiredValidator);
 		txtNoPerDay.getValidators().add(numberValidator);
+		txtDosage.getValidators().add(requiredValidator);
+		txtDosage.getValidators().add(numberValidator);
 		txtDays.getValidators().add(requiredValidator);
 		txtDays.getValidators().add(numberValidator);
-
+		txtPeriod.getValidators().add(requiredValidator);
+		
 		txtMedcine.focusedProperty().addListener(new ChangeListener<Boolean>() {
 
 			@Override
@@ -98,12 +129,12 @@ public class MedcineController  implements Initializable {
 			}
 		});
 		
-		txtConsumption.focusedProperty().addListener(new ChangeListener<Boolean>() {
+		txtDosage.focusedProperty().addListener(new ChangeListener<Boolean>() {
 
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 				if (!newValue) {
-					txtConsumption.validate();
+					txtDosage.validate();
 				}
 			}
 		});
@@ -124,6 +155,16 @@ public class MedcineController  implements Initializable {
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 				if (!newValue) {
 					txtDays.validate();
+				}
+			}
+		});
+		
+		txtPeriod.focusedProperty().addListener(new ChangeListener<Boolean>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				if (!newValue) {
+					txtPeriod.validate();
 				}
 			}
 		});

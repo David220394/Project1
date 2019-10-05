@@ -147,9 +147,9 @@ public class CalendarController implements Initializable {
 					entry = new Entry<>();
 					entry.setTitle(appointmentDTO.getName());
 					entry.changeStartDate(time.toLocalDate());
-					entry.changeStartTime(LocalTime.parse(appointmentDTO.getFrom()));
+					entry.changeStartTime(appointmentDTO.getFrom());
 					entry.changeEndDate(entry.getStartDate());
-					entry.changeEndTime(LocalTime.parse(appointmentDTO.getTo()));
+					entry.changeEndTime(appointmentDTO.getTo());
 					consultationService.saveConsultationFromDto(appointmentDTO);
 					if (control instanceof AllDayView) {
 						entry.setFullDay(true);

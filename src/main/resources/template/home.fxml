@@ -14,6 +14,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="850.0" stylesheets="@../static/dark-theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.management.controller.HomeController">
@@ -22,19 +24,27 @@
          <tabs>
             <Tab fx:id="patientTab" styleClass="tab-main" text="Patients">
               <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" style="-fx-background-color: #02030A;">
+                <AnchorPane minHeight="0.0" minWidth="0.0">
                      <children>
-                        <ScrollPane layoutY="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="75.0">
+                        <ScrollPane layoutY="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="75.0">
                            <content>
-                              <JFXTreeTableView fx:id="patientTableView" prefHeight="400.0" prefWidth="848.0" style="-fx-background-color: #02030A;" />
+                              <JFXTreeTableView fx:id="patientTableView" prefHeight="900.0" prefWidth="1500.0" />
                            </content>
                         </ScrollPane>
-                        <TextField fx:id="search" layoutX="455.0" layoutY="15.0" prefHeight="33.0" prefWidth="198.0" promptText="Search" style="-fx-background-color: #02030A; -fx-border-color: #B7C3D7; -fx-border-radius: 2em;" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="15.0">
+                        <TextField fx:id="search" layoutX="455.0" layoutY="15.0" prefHeight="33.0" prefWidth="198.0" promptText="Search" style="-fx-border-color: #B7C3D7; -fx-border-radius: 2em;" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="15.0">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </TextField>
-                        <JFXButton layoutX="612.0" layoutY="70.0" onAction="#addPatient" prefHeight="39.0" prefWidth="75.0" text="ADD" textFill="WHITE" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="30.0" />
+                        <JFXButton layoutX="612.0" layoutY="70.0" onAction="#addPatient" prefHeight="39.0" prefWidth="75.0" text="ADD" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="30.0">
+                           <textFill>
+                              <LinearGradient endX="1.0" endY="1.0" startX="0.8333333333333334" startY="0.43333333333333335">
+                                 <stops>
+                                    <Stop color="#51f2cf" />
+                                    <Stop color="#1228e0" offset="1.0" />
+                                 </stops>
+                              </LinearGradient>
+                           </textFill></JFXButton>
                      </children>
                   </AnchorPane>
               </content>
@@ -45,7 +55,7 @@
                      <children>
                         <ScrollPane prefHeight="478.0" prefWidth="900.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
                            <content>
-                              <Pane fx:id="pnlCalendar" style="-fx-background-color: #02030A;" />
+                              <Pane fx:id="pnlCalendar" />
                            </content>
                         </ScrollPane>
                      </children>
@@ -54,7 +64,7 @@
             </Tab>
             <Tab fx:id="administrationTab" styleClass="tab-main" text="Administration">
               <content>
-                <AnchorPane style="-fx-background-color: #02030A;">
+                <AnchorPane>
                      <children>
                         <HBox alignment="CENTER" layoutX="23.0" layoutY="35.0" prefHeight="92.0" prefWidth="700.0" spacing="50.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
                            <children>
@@ -65,7 +75,7 @@
                                           <Font name="System Bold" size="26.0" />
                                        </font>
                                     </Label>
-                                    <Label text="Total Patients" textFill="#e7e5e5" />
+                                    <Label text="Total Patients" />
                                  </children>
                               </VBox>
                               <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
@@ -75,7 +85,7 @@
                                           <Font name="System Bold" size="26.0" />
                                        </font>
                                     </Label>
-                                    <Label text="Month Gain" textFill="#e7e5e5" />
+                                    <Label text="Month Gain" />
                                  </children>
                               </VBox>
                               <VBox alignment="CENTER" prefHeight="200.0" prefWidth="150.0">
@@ -85,7 +95,7 @@
                                           <Font name="System Bold" size="26.0" />
                                        </font>
                                     </Label>
-                                    <Label prefHeight="17.0" text="Monthly Consultations" textFill="#e7e5e5" />
+                                    <Label prefHeight="17.0" text="Monthly Consultations" textFill="#0d0d0d" />
                                  </children>
                               </VBox>
                            </children>

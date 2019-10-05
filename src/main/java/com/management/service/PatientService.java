@@ -23,11 +23,8 @@ public class PatientService {
 	}
 	
 	public Patient savePatient(Patient patient) {
-		Patient p = null;
-		if(patientRepository.findByFirstNameAndLastName(patient.getFirstName(), patient.getLastName()) == null) {
-			p = patientRepository.save(patient);
-		}
-		return p;
+		patient = patientRepository.save(patient);
+		return patient;
 	}
 	
 	public PatientDTO findByFirstNameAndLastNameDto(String firstName, String lastName) {
@@ -54,6 +51,10 @@ public class PatientService {
 	
 	public Patient updatePatient(Patient patient) {
 		return patientRepository.save(patient);
+	}
+	
+	public void deletePatient(Patient patient) {
+		patientRepository.delete(patient);
 	}
 	
 }
