@@ -3,6 +3,7 @@ package com.management.controller;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,10 @@ import com.management.config.SpringFXMLLoader;
 import com.management.config.StageManager;
 import com.management.controller.dto.ConsultationDTO;
 import com.management.controller.dto.PatientDTO;
-import com.management.entity.Consultation;
 import com.management.entity.FxmlView;
 import com.management.entity.Patient;
 import com.management.service.ConsultationService;
 import com.management.service.PatientService;
-import com.management.utility.Converter;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -36,13 +35,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableColumn.CellDataFeatures;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -227,12 +223,13 @@ public class PatientProfileController implements Initializable{
 	
 	public void loadData() {
 		list.clear();
-		for (ConsultationDTO consultation : patient.getConsultations()) {
+		List<com.management.entity.Consultation> consultations = consultationService.findByPatient(patient.getFirstName(), patient.getLastName());
+		for (com.management.entity.Consultation consultation : consultations) {
 			list.add(new Consultation(consultation.getStartDate().toString(), 
 										consultation.getStartTime().toString(),
 										consultation.getComplaints(), 
 										consultation.getDiagnosis(), 
-										consultation.getLocation(), 
+										consultation.getLocation().getName(), 
 										String.valueOf(consultation.getCharge())));
 		}
 	}
@@ -277,6 +274,7 @@ public class PatientProfileController implements Initializable{
 		stage.setScene(scene);
 		stage.showAndWait();
 		dialogController.setConsultation(null);
+		loadData();
 	}
 	
 	class Consultation extends RecursiveTreeObject<Consultation> {

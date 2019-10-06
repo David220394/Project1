@@ -21,6 +21,14 @@ public class ReportDto {
 		this.month5Charge = month5Charge;
 		this.consultationCount = consultationCount;
 	}
+	
+	public ReportDto(int currentMonthCharge, int consultationCount) {
+		super();
+		this.currentMonthCharge = currentMonthCharge;
+		this.consultationCount = consultationCount;
+	}
+
+
 
 	public int getCurrentMonthCharge() {
 		return currentMonthCharge;

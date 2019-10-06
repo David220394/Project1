@@ -48,9 +48,11 @@ public class Converter {
 				cM.getMedicine().getMedicineName(),
 				cM.getDosage(),
 				cM.getPeriod(),
-				cM.getMedicine().getConsumption().name(),
 				cM.getIntakeTimes()
 				);
+		if(cM.getMedicine().getConsumption() != null) {
+			dto.setConsumption(cM.getMedicine().getConsumption().name());
+		}
 		return dto;
 	}
 

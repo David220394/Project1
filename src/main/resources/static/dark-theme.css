@@ -4,8 +4,8 @@
 */
 
 * {
-    -fx-primary :  #ffffff;
-    -fx-secondary : #000000;
+    -fx-primary :  #FFFFFF;
+    -fx-secondary : #00f7a5;
     -fx-primarytext : #000000;
     -fx-blue: #1976D2;
     -fx-red: #FF0000;
@@ -14,7 +14,15 @@
 }
 
 .root{
-    -fx-background-color: -fx-primary;
+	
+    -fx-background-color: rgba(0, 37, 247,0.2);
+}
+
+.mainPane{
+	-fx-background-image: url("../static/image/background.jpg");
+	-fx-background-repeat: no-repeat;   
+    -fx-background-position: center center;
+	-fx-background-size: cover;
 }
 
 .glyph-icon
@@ -23,8 +31,8 @@
 }
 
 .button{
-    -fx-text-fill: -fx-primarytext;
-    -fx-background-color: -fx-primary;
+    -fx-text-fill: -fx-secondary;
+    -fx-background-color: transparent;
     -fx-border-color: -fx-secondary;
     -fx-border-radius: 10px;
     -fx-background-radius: 10px;
@@ -36,11 +44,19 @@
     -fx-background-color: -fx-secondary;
     -fx-text-fill: -fx-primary;
 }
+.mainButton{
+	-fx-text-fill: -fx-primary;
+	-fx-font-size: 10pt;
+	-fx-font-weight: 700;
+	-fx-border-color: -fx-primary;
+	-fx-content-display: top;
+	
+}
 
 .text-field
 {
-	-fx-background-color: -fx-primary;
-    -fx-text-fill: -fx-primarytext;
+	-fx-background-color: transparent;
+    -fx-text-fill: black;
     -fx-font-size : 10pt;
 	-fx-font-color : -fx-text;
     -jfx-focus-color: -fx-secondary;
@@ -49,8 +65,7 @@
 
 .col-field
 {
-	-fx-background-color: -fx-primary;
-    -fx-text-fill: -fx-primarytext;
+	-fx-background-color: transparent;
     -fx-font-size : 10pt;
 	-fx-font-color : -fx-text;
     -jfx-focus-color: -fx-secondary;
@@ -73,25 +88,27 @@
 }
 
 .tree-table-column.table-cell { 
-  -fx-background-color: -fx-primary;
+  -fx-background-color: transparent;
   -fx-font-size : 10pt;
-	-fx-font-color : -fx-text;
 }
 
 
 /*Main Screen CSS Styling starts here*/
 
 /*TablPane styling*/
+.jfx-tab-pane:top .depth-container .tab-header-area .headers-region .tab-selected-line {
+    -fx-background-color: #1272D3;
+}
 .tab{
-    -fx-background-color: -fx-primary;
+    -fx-background-color: transparent;
 }
 
 .tab-header-background{
-    -fx-background-color: -fx-primary;
+    -fx-background-color: rgba(0,0,0,0.03);
 }
 
 .tab-label{
-    -fx-text-fill: -fx-secondary;
+    -fx-text-fill: -fx-primary;
     -fx-font-size: 10pt; 
 }
 
@@ -99,6 +116,7 @@
 .tab-main{
     -fx-pref-height : 60;
     -fx-max-height : 60;
+	-fx-background-color : transparent;
 }
 
 .settings-tab{
@@ -127,36 +145,6 @@
 .context-menu
 {
     -fx-background-color:  derive(-fx-primary, 20%);
-}
-
-/*Hamburger Styling*/
-.jfx-hamburger-icon{
-    -fx-spacing: 7;
-}
-
-.jfx-hamburger-icon StackPane
-{
-    -fx-background-color: -fx-secondary;
-    -fx-background-radius: 5px;
-}
-
-/*Toolbar buttons*/
-.toolbar-button
-{
-    -fx-border-color: transparent;
-    -fx-background-color: derive(-fx-primary, 10%);
-    -fx-background-radius: 0px;
-    -fx-border-radius: 0px;
-}
-.toolbar-button:hover
-{
-    -fx-background-color: -fx-secondary;
-    -fx-text-fill: -fx-primary;
-}
-
-.toolbar-button:hover .glyph-icon, .toolbar-button:hover .glyph-icon
-{
-    -fx-fill: -fx-primary;
 }
 
 /*Text styling*/
@@ -211,7 +199,6 @@
 
 /*TableView Default*/
 .table-view{
-    -fx-background-color: derive(-fx-primary, 10%);
     -fx-font-size: 16px; 
     -fx-border-color: derive(-fx-secondary, -60%);
 }

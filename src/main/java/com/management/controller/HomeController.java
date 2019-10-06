@@ -1,9 +1,5 @@
 package com.management.controller;
 
-import java.awt.Dimension;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Toolkit;
 import java.io.File;
 import java.net.URL;
 import java.time.DayOfWeek;
@@ -12,11 +8,14 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.controlsfx.control.Notifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -34,6 +33,7 @@ import com.calendarfx.view.DateControl.CreateEntryParameter;
 import com.calendarfx.view.DateControl.EntryDetailsParameter;
 import com.calendarfx.view.VirtualGrid;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
@@ -66,6 +66,7 @@ import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
@@ -116,8 +117,15 @@ public class HomeController implements Initializable {
     @FXML
     private Label txtMonthlyConsultations;
 
+
     @FXML
-    private AreaChart<String, Number> gainChart;
+    private JFXComboBox<String> txtMonth;
+
+    @FXML
+    private JFXComboBox<String> txtYear;
+
+    @FXML
+    private Button btnSubmit;
 
     @FXML
     private JFXButton btnImportPatient;
@@ -141,12 +149,15 @@ public class HomeController implements Initializable {
 	private ObservableList<Patient> patients;
 
 	private ReportDto reportDto;
+	private BidiMap<String, Integer> monthsMap = new DualHashBidiMap<>();
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
 		initTable();
 		initCalendar();
+		populateReport();
+    	initComboBox();
         calendarView.setMinWidth(1080);
         calendarView.setMinHeight(600);
 		mainTabs.getSelectionModel().selectedItemProperty().addListener(
@@ -157,11 +168,64 @@ public class HomeController implements Initializable {
 			            	populatePatientList();
 			            }else if("administrationTab".equals(t1.idProperty().getValue())) {
 			            	populateReport();
-			            	initChart();
+			            	initComboBox();
+			            	//initChart();
 			            }
 			        }
 			    }
 			);
+	}
+	
+	public void initComboBox() {
+		ObservableList<String> months = FXCollections.observableArrayList();
+		monthsMap.put("JAN", 1); months.add("JAN");
+		monthsMap.put("FEB", 2); months.add("FEB");
+		monthsMap.put("MAR", 3); months.add("MAR");
+		monthsMap.put("APR", 4); months.add("APR");
+		monthsMap.put("MAY", 5); months.add("MAY");
+		monthsMap.put("JUN", 6); months.add("JUN");
+		monthsMap.put("JUL", 7); months.add("JUL");
+		monthsMap.put("AUG", 8); months.add("AUG");
+		monthsMap.put("SEP", 9); months.add("SEP");
+		monthsMap.put("OCT", 10);months.add("OCT");
+		monthsMap.put("NOV", 11);months.add("NOV");
+		monthsMap.put("DEC", 12);months.add("DEC");
+		
+		ObservableList<String> years = FXCollections.observableArrayList();
+		LocalDate date = LocalDate.now();
+		int year = date.getYear();
+		int month = date.getMonthValue();
+		
+		for(int i=1;i<8;i++) {
+			years.add(String.valueOf(year-8+i));
+		}
+		years.add(String.valueOf(year));
+		for(int i=1;i<8;i++) {
+			years.add(String.valueOf(year+i));
+		}
+		
+		txtMonth.getItems().addAll(months);
+		txtMonth.setValue(monthsMap.getKey(month));
+		txtYear.getItems().addAll(years);
+		txtYear.setValue(String.valueOf(year));
+		
+	}
+	
+	public void onSubmit() {
+		int month = monthsMap.get(txtMonth.getValue());
+		int year = Integer.parseInt(txtYear.getValue());
+		ReportDto report = consultationService.getRportForMonthAndYear(month, year);
+		txtMonthGain.setText(String.valueOf(report.getCurrentMonthCharge()));
+		txtMonthlyConsultations.setText(String.valueOf(report.getConsultationCount()));
+		
+	}
+	
+	public void openCalendar() {
+		mainTabs.getSelectionModel().select(calendarTab);
+	}
+	
+	public void openPatient() {
+		mainTabs.getSelectionModel().select(patientTab);
 	}
 	
 	public void initTable() {
@@ -233,6 +297,7 @@ public class HomeController implements Initializable {
 		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.setScene(scene);
 		stage.showAndWait();
+		populatePatientList();
 	}
 
 	public void addPatient() {
@@ -434,6 +499,16 @@ public class HomeController implements Initializable {
 						entry.changeStartTime(appointmentDTO.getFrom());
 						entry.changeEndDate(entry.getStartDate());
 						entry.changeEndTime(appointmentDTO.getTo());
+						Calendar calendar = null;
+						for (Calendar c : calendarView.getCalendars()) {
+							if(c.getName().equals(appointmentDTO.getLocation())) {
+								calendar = c;
+								break;
+							}
+						}
+						if(calendar != null) {
+							entry.setCalendar(calendar);
+						}
 						Consultation c = consultationService.saveConsultationFromDto(appointmentDTO);
 						if (control instanceof AllDayView) {
 							entry.setFullDay(true);
@@ -487,32 +562,39 @@ public class HomeController implements Initializable {
 		txtMonthlyConsultations.setText(String.valueOf(reportDto.getConsultationCount()));
 	}
 	
-	public void initChart() {
-		int maxVal = 0;
-		if(reportDto.getMonth1Charge() > maxVal) { maxVal = reportDto.getMonth1Charge();}
-		if(reportDto.getMonth1Charge() > maxVal) { maxVal = reportDto.getMonth2Charge();}
-		if(reportDto.getMonth1Charge() > maxVal) { maxVal = reportDto.getMonth3Charge();}
-		if(reportDto.getMonth1Charge() > maxVal) { maxVal = reportDto.getMonth4Charge();}
-		if(reportDto.getMonth1Charge() > maxVal) { maxVal = reportDto.getMonth5Charge();}
-		
-		int minVal = (maxVal / 5) + (maxVal % 5);
-		CategoryAxis xAxis = new CategoryAxis();  
-        
-		//Defining the y Axis 
-		NumberAxis yAxis = new NumberAxis(); 
-		yAxis.setLabel("Total Charges (Rs.)");
-		gainChart = new AreaChart<>(xAxis, yAxis);
-		
-		XYChart.Series series1 = new XYChart.Series();  
-		series1.getData().add(new XYChart.Data(LocalDate.now().minusMonths(-5).getMonth(), reportDto.getMonth1Charge())); 
-		series1.getData().add(new XYChart.Data(LocalDate.now().minusMonths(-4).getMonth(), reportDto.getMonth2Charge())); 
-		series1.getData().add(new XYChart.Data(LocalDate.now().minusMonths(-3).getMonth(),  reportDto.getMonth3Charge())); 
-		series1.getData().add(new XYChart.Data(LocalDate.now().minusMonths(-2).getMonth(), reportDto.getMonth4Charge())); 
-		series1.getData().add(new XYChart.Data(LocalDate.now().minusMonths(-1).getMonth(), reportDto.getMonth5Charge())); 
-		
-		gainChart.getData().add(series1);
-		
-	}
+	/*
+	 * public void initChart() { int maxVal = 0; if(reportDto.getMonth1Charge() >
+	 * maxVal) { maxVal = reportDto.getMonth1Charge();}
+	 * if(reportDto.getMonth1Charge() > maxVal) { maxVal =
+	 * reportDto.getMonth2Charge();} if(reportDto.getMonth1Charge() > maxVal) {
+	 * maxVal = reportDto.getMonth3Charge();} if(reportDto.getMonth1Charge() >
+	 * maxVal) { maxVal = reportDto.getMonth4Charge();}
+	 * if(reportDto.getMonth1Charge() > maxVal) { maxVal =
+	 * reportDto.getMonth5Charge();}
+	 * 
+	 * int minVal = (maxVal / 5) + (maxVal % 5); CategoryAxis xAxis = new
+	 * CategoryAxis();
+	 * 
+	 * //Defining the y Axis NumberAxis yAxis = new NumberAxis();
+	 * yAxis.setLabel("Total Charges (Rs.)"); gainChart = new AreaChart<>(xAxis,
+	 * yAxis);
+	 * 
+	 * XYChart.Series series1 = new XYChart.Series(); series1.getData().add(new
+	 * XYChart.Data(LocalDate.now().minusMonths(-5).getMonth(),
+	 * reportDto.getMonth1Charge())); series1.getData().add(new
+	 * XYChart.Data(LocalDate.now().minusMonths(-4).getMonth(),
+	 * reportDto.getMonth2Charge())); series1.getData().add(new
+	 * XYChart.Data(LocalDate.now().minusMonths(-3).getMonth(),
+	 * reportDto.getMonth3Charge())); series1.getData().add(new
+	 * XYChart.Data(LocalDate.now().minusMonths(-2).getMonth(),
+	 * reportDto.getMonth4Charge())); series1.getData().add(new
+	 * XYChart.Data(LocalDate.now().minusMonths(-1).getMonth(),
+	 * reportDto.getMonth5Charge()));
+	 * 
+	 * gainChart.getData().add(series1);
+	 * 
+	 * }
+	 */
 	
 	
 	public void downloadConsultations() {

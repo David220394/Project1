@@ -11,7 +11,7 @@
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import com.management.utility.JFXAutocompleteTextTField?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="350.0" style="-fx-background-color: #02030A;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.management.controller.AddConsultationController">
+<Pane stylesheets="@../static/dark-theme.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.management.controller.AddConsultationController">
    <children>
       <Label alignment="CENTER" layoutY="14.0" prefHeight="50.0" prefWidth="350.0" text="Add Appointment" textAlignment="CENTER" textFill="#e7e5e5">
          <font>
@@ -55,7 +55,7 @@
 
              <HBox alignment="CENTER" prefHeight="68.0" prefWidth="330.0">
                <children>
-                  <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#onCancel" prefWidth="150.0" style="-fx-background-color: #02030A;" text="Cancel" textFill="WHITE" textOverrun="CENTER_ELLIPSIS">
+                  <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#onCancel" prefWidth="150.0" text="Cancel" textFill="WHITE" textOverrun="CENTER_ELLIPSIS">
                      <font>
                         <Font size="19.0" />
                      </font>
@@ -63,7 +63,7 @@
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="btnSubmit" mnemonicParsing="false" onAction="#onSubmit" prefWidth="150.0" style="-fx-background-color: #02030A;" text="Add" textFill="WHITE" textOverrun="CENTER_ELLIPSIS">
+                  <Button fx:id="btnSubmit" mnemonicParsing="false" onAction="#onSubmit" prefWidth="150.0" text="Add" textFill="WHITE" textOverrun="CENTER_ELLIPSIS">
                      <font>
                         <Font size="19.0" />
                      </font>

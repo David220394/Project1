@@ -74,13 +74,17 @@ public class MedcineController  implements Initializable {
 		if(medicine.getPeriod() != null && medicine.getPeriod().contains("DAYS")) {
 			freq = medicine.getPeriod().replace(" DAYS", "");
 			period = "DAYS";
-		}else {
+		}else if(medicine.getPeriod() != null){
 			freq = medicine.getPeriod().replace(" MONTHS", "");
+		}else {
+			freq = "0";
 		}
 		txtMedcine.setText(medicine.getMedicine().getMedicineName());
 		txtDosage.setText(medicine.getDosage());
 		txtNoPerDay.setText(String.valueOf(medicine.getIntakeTimes()));
-		txtConsumption.setValue(medicine.getMedicine().getConsumption().name());
+		if(medicine.getMedicine().getConsumption() != null) {
+			txtConsumption.setValue(medicine.getMedicine().getConsumption().name());
+		}
 		txtDays.setText(freq);
 		txtPeriod.setValue(period);
 	}
@@ -92,11 +96,12 @@ public class MedcineController  implements Initializable {
 			txtDays.validate() &
 			txtPeriod.validate()) {
 			String period = txtDays.getText()+" "+txtPeriod.getValue();
-			return new ConsultationMedicineDTO(txtMedcine.getText(),
-												txtDosage.getText(),
-												period, 
-												txtConsumption.getValue(), 
-												Integer.parseInt(txtNoPerDay.getText()));
+			ConsultationMedicineDTO dto = new ConsultationMedicineDTO(txtMedcine.getText(),
+					txtDosage.getText(),
+					period, 
+					Integer.parseInt(txtNoPerDay.getText()));
+			dto.setConsumption(txtConsumption.getValue());
+			return dto;
 		}else {
 			return null;
 		}

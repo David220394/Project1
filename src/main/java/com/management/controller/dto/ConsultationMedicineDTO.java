@@ -11,12 +11,11 @@ private String medicine;
 	public ConsultationMedicineDTO() {
 		super();
 	}
-	public ConsultationMedicineDTO(String medicine,String dosage,String period, String consumption, int intakeTimes) {
+	public ConsultationMedicineDTO(String medicine,String dosage,String period, int intakeTimes) {
 		super();
 		this.medicine = medicine;
 		this.dosage = dosage;
 		this.period = period;
-		this.consumption = consumption;
 		this.intakeTimes = intakeTimes;
 	}
 	public String getMedicine() {

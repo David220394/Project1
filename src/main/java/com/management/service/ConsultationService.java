@@ -98,6 +98,14 @@ public class ConsultationService {
 	public void saveConsultation(Consultation consultation) {
 				
 		consultationRepository.save(consultation);
+		for (ConsultationMedicine cM : consultation.getConsultationMedicines()) {
+			Medicine medicine = medicineService.findByMedicineName(cM.getMedicine().getMedicineName());
+			if(medicine == null) {
+				medicineService.addMedicine(cM.getMedicine());
+			}
+			cM.setConsultation(consultation);
+			consultationMedicineRepository.save(cM);
+		}
 	}
 	
 	public Consultation saveConsultationFromDto(AppointmentDTO dto) {
@@ -129,6 +137,11 @@ public class ConsultationService {
 	
 	public List<Consultation> findAllConsultations() {
 		return consultationRepository.findAll();
+	}
+	
+	public List<Consultation> findByPatient(String firstName, String lastName){
+		Patient patient = patientRepository.findByFirstNameAndLastName(firstName, lastName);
+		return consultationRepository.findByPatient(patient);
 	}
 	
 	public Consultation findByStartDateAndStartTimeAndComplaintsAndDiagnosis(LocalDate startDate, LocalTime startTime, String conplaints, String diagnosis) {
@@ -171,6 +184,22 @@ public class ConsultationService {
 		return new ReportDto(currentMonthCharge, month1Charge, month2Charge, month3Charge, month4Charge, month5Charge, consultationCount);
 	}
 	
+	public ReportDto getRportForMonthAndYear(int month, int year) {
+		int consultation = 0;
+		int charges = 0;
+		for(Consultation c : consultationRepository.findAll()) {
+			Period period = Period.between(c.getStartDate(), LocalDate.now());
+			int m = period.getMonths();
+			if(month == period.getMonths() && year == period.getYears()) {
+				charges += c.getCharge();
+				consultation++;
+			}
+		}
+		return new ReportDto(charges, consultation);
+	}
+	
+	
+	
 	public void exportConsultation(File file) {
 		List<Consultation> consultations = consultationRepository.findAll();
 		 XSSFWorkbook workbook = new XSSFWorkbook();
@@ -196,8 +225,13 @@ public class ConsultationService {
             int colNum = 0;
             row.createCell(colNum++).setCellValue((String) consultation.getStartDate().toString());
             row.createCell(colNum++).setCellValue((String) consultation.getStartTime().toString());
-            row.createCell(colNum++).setCellValue((String) consultation.getPatient().getFirstName() + " " +consultation.getPatient().getLastName());
-            row.createCell(colNum++).setCellValue((String) consultation.getLocation().getName());
+            if (consultation.getPatient() != null) {
+				row.createCell(colNum++).setCellValue((String) consultation.getPatient().getFirstName() + " "
+						+ consultation.getPatient().getLastName());
+			}else {
+				row.createCell(colNum++).setCellValue("Unknown");
+			}
+			row.createCell(colNum++).setCellValue((String) consultation.getLocation().getName());
             row.createCell(colNum++).setCellValue((String) consultation.getComplaints());
             row.createCell(colNum++).setCellValue((String) consultation.getNose());
             row.createCell(colNum++).setCellValue((String) consultation.getEars());

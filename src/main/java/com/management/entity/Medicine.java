@@ -39,6 +39,11 @@ public class Medicine {
 		this.medicineName = medicineName;
 		this.consumption = consumption;
 	}
+	
+	public Medicine(String medicineName) {
+		super();
+		this.medicineName = medicineName;
+	}
 
 	public long getMedicineId() {
 		return medicineId;
