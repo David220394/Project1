@@ -74,6 +74,7 @@ public class ConsultationService {
 		consultation.setTitle(p.getFirstName()+" | "+ p.getLastName());
 		consultation.setLocation(findLocationByName(dto.getLocation()));
 		consultation.setPatient(p);
+		consultation.setOthers(dto.getOthers());
 		
 		consultationRepository.save(consultation);
 		
@@ -82,7 +83,7 @@ public class ConsultationService {
 			if(medicine == null) {
 				medicine = new Medicine();
 				medicine.setMedicineName(cMDto.getMedicine());
-				medicine.setConsumption(MedicineEnum.valueOf(cMDto.getConsumption()));
+				medicine.setConsumption(cMDto.getConsumption());
 				medicine = medicineService.addMedicine(medicine);
 			}
 			ConsultationMedicine cM = new ConsultationMedicine();
@@ -218,6 +219,7 @@ public class ConsultationService {
         r.createCell(c++).setCellValue((String) "Throats");
         r.createCell(c++).setCellValue((String) "Neack");
         r.createCell(c++).setCellValue((String) "ILS");
+        r.createCell(c++).setCellValue((String) "Others");
         r.createCell(c++).setCellValue((String) "Diagnosis");
         r.createCell(c++).setCellValue((String) "Charge");
 		for (Consultation consultation : consultations) {
@@ -238,6 +240,7 @@ public class ConsultationService {
             row.createCell(colNum++).setCellValue((String) consultation.getThroat());
             row.createCell(colNum++).setCellValue((String) consultation.getNeck());
             row.createCell(colNum++).setCellValue((String) consultation.getIlS());
+            row.createCell(colNum++).setCellValue((String) consultation.getOthers());
             row.createCell(colNum++).setCellValue((String) consultation.getDiagnosis());
             row.createCell(colNum++).setCellValue((String) String.valueOf(consultation.getCharge()));
 		}

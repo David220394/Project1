@@ -27,6 +27,8 @@ public class ConsultationDTO {
 	
 	private String ilS;
 
+	private String others;
+	
 	private String diagnosis;
 	
 	private double charge;	
@@ -52,7 +54,7 @@ public class ConsultationDTO {
 	}
 
 	public ConsultationDTO(String complaints, String ears, String nose, String throat, String neck, String ilS,
-			String diagnosis, double charge, LocalDate startDate, LocalTime startTime,
+			String diagnosis, String others, double charge, LocalDate startDate, LocalTime startTime,
 			LocalDate endDate, LocalTime endTime, String location,
 			List<ConsultationMedicineDTO> consultationMedicines) {
 		super();
@@ -69,6 +71,7 @@ public class ConsultationDTO {
 		this.endDate = endDate;
 		this.endTime = endTime;
 		this.location = location;
+		this.others = others;
 		this.consultationMedicines = consultationMedicines;
 	}
 
@@ -191,5 +194,15 @@ public class ConsultationDTO {
 	public void setPatient(PatientDTO patient) {
 		this.patient = patient;
 	}
+
+	public String getOthers() {
+		return others;
+	}
+
+	public void setOthers(String others) {
+		this.others = others;
+	}
+	
+	
 		
 }

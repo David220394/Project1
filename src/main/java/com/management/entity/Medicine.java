@@ -24,7 +24,7 @@ public class Medicine {
 	private String medicineName;
 	
 	@Column(name = "CONSUMPTION")
-	private MedicineEnum consumption;
+	private String consumption;
 	
 	@OneToMany(mappedBy = "medicine")
 	@JsonIgnore
@@ -34,7 +34,7 @@ public class Medicine {
 		super();
 	}
 
-	public Medicine(String medicineName, MedicineEnum consumption) {
+	public Medicine(String medicineName, String consumption) {
 		super();
 		this.medicineName = medicineName;
 		this.consumption = consumption;
@@ -61,11 +61,11 @@ public class Medicine {
 		this.medicineName = medicineName;
 	}
 
-	public MedicineEnum getConsumption() {
+	public String getConsumption() {
 		return consumption;
 	}
 
-	public void setConsumption(MedicineEnum consumption) {
+	public void setConsumption(String consumption) {
 		this.consumption = consumption;
 	}
 

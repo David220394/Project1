@@ -107,6 +107,9 @@ public class HomeController implements Initializable {
 
     @FXML
     private Tab administrationTab;
+    
+    @FXML
+    private Tab accountTab;
 
     @FXML
     private Label txtTotalPatient;
@@ -157,7 +160,7 @@ public class HomeController implements Initializable {
 		initTable();
 		initCalendar();
 		populateReport();
-    	initComboBox();
+    	//initComboBox();
         calendarView.setMinWidth(1080);
         calendarView.setMinHeight(600);
 		mainTabs.getSelectionModel().selectedItemProperty().addListener(
@@ -168,8 +171,10 @@ public class HomeController implements Initializable {
 			            	populatePatientList();
 			            }else if("administrationTab".equals(t1.idProperty().getValue())) {
 			            	populateReport();
-			            	initComboBox();
+			            	//initComboBox();
 			            	//initChart();
+			            }else if("accountTab".equals(t1.idProperty().getValue())) {
+			            	initComboBox();
 			            }
 			        }
 			    }
@@ -212,6 +217,7 @@ public class HomeController implements Initializable {
 	}
 	
 	public void onSubmit() {
+		System.out.println("TEST");
 		int month = monthsMap.get(txtMonth.getValue());
 		int year = Integer.parseInt(txtYear.getValue());
 		ReportDto report = consultationService.getRportForMonthAndYear(month, year);

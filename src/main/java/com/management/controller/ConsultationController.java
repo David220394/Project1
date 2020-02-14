@@ -75,21 +75,27 @@ public class ConsultationController  implements Initializable  {
 
     @FXML
     private JFXTextArea txtComplaints;
-
+    
     @FXML
-    private JFXTextArea txtNose;
-
+    private JFXTextArea txtExamination;
+    
     @FXML
-    private JFXTextArea txtEars;
+    private JFXTextArea txtOthers;
 
-    @FXML
-    private JFXTextArea txtILS;
-
-    @FXML
-    private JFXTextArea txtThroats;
-
-    @FXML
-    private JFXTextArea txtNeck;
+//    @FXML
+//    private JFXTextArea txtNose;
+//
+//    @FXML
+//    private JFXTextArea txtEars;
+//
+//    @FXML
+//    private JFXTextArea txtILS;
+//
+//    @FXML
+//    private JFXTextArea txtThroats;
+//
+//    @FXML
+//    private JFXTextArea txtNeck;
 
     @FXML
     private JFXTextArea txtDiagnosis;
@@ -255,19 +261,30 @@ public class ConsultationController  implements Initializable  {
 					cM.setDosage(medDto.getDosage());
 					cM.setPeriod(medDto.getPeriod());
 					if(medDto.getConsumption() != null && medDto.getConsumption().length() > 3) {
-						cM.setMedicine(new Medicine(medDto.getMedicine(), MedicineEnum.valueOf(medDto.getConsumption())));
+						cM.setMedicine(new Medicine(medDto.getMedicine(), medDto.getConsumption()));
 					}else {
 						cM.setMedicine(new Medicine(medDto.getMedicine()));
 					}
 					
 					consultationMedicines.add(cM);
 				}
+				
+				String[] examinations = txtExamination.getText().split("|");
+				for(int i=0; i<examinations.length;i++) {
+					if(examinations[i].startsWith("Nose")) {
+						consultation.setNose(examinations[i].replace("Nose:", ""));
+					}else if(examinations[i].startsWith("Ear")) {
+						consultation.setEars(examinations[i].replace("Ears:", ""));
+					}else if(examinations[i].startsWith("ILS")) {
+						consultation.setIlS(examinations[i].replace("ILS:", ""));
+					}else if(examinations[i].startsWith("Throats")) {
+						consultation.setThroat(examinations[i].replace("Throats:", ""));
+					}else if(examinations[i].startsWith("Neck")) {
+						consultation.setNeck(examinations[i].replace("Neck:", ""));
+					}
+				}
 				consultation.setComplaints(txtComplaints.getText());
-				consultation.setEars(txtEars.getText());
-				consultation.setThroat(txtThroats.getText());
-				consultation.setNeck(txtNeck.getText());
-				consultation.setNose(txtNose.getText());
-				consultation.setIlS(txtILS.getText());
+				consultation.setOthers(txtOthers.getText());
 				consultation.setDiagnosis(txtDiagnosis.getText());
 				consultation.setCharge(Integer.parseInt(txtCharges.getText()));
 				consultation.setStartDate(startDate);
@@ -285,12 +302,22 @@ public class ConsultationController  implements Initializable  {
 					consultationMedicines.add(med.getValues());
 				}
 				dto = new ConsultationDTO();
+				String[] examinations = txtExamination.getText().split("|");
+				for(int i=0; i<examinations.length;i++) {
+					if(examinations[i].startsWith("Nose")) {
+						dto.setNose(examinations[i].replace("Nose:", ""));
+					}else if(examinations[i].startsWith("Ear")) {
+						dto.setEars(examinations[i].replace("Ears:", ""));
+					}else if(examinations[i].startsWith("ILS")) {
+						dto.setIlS(examinations[i].replace("ILS:", ""));
+					}else if(examinations[i].startsWith("Throats")) {
+						dto.setThroat(examinations[i].replace("Throats:", ""));
+					}else if(examinations[i].startsWith("Neck")) {
+						dto.setNeck(examinations[i].replace("Neck:", ""));
+					}
+				}
 				dto.setComplaints(txtComplaints.getText());
-				dto.setEars(txtEars.getText());
-				dto.setThroat(txtThroats.getText());
-				dto.setNeck(txtNeck.getText());
-				dto.setNose(txtNose.getText());
-				dto.setIlS(txtILS.getText());
+				dto.setOthers(txtOthers.getText());
 				dto.setDiagnosis(txtDiagnosis.getText());
 				dto.setCharge(Integer.parseInt(txtCharges.getText()));
 				dto.setStartDate(startDate);
@@ -371,13 +398,20 @@ public class ConsultationController  implements Initializable  {
 					age.setText(String.valueOf(LocalDate.now().getYear() - patient.getDateOfBirth().getYear()));
 				}
 			}
-			
+			StringBuilder sb = new StringBuilder();
+			if(consultation.getEars() != null) { sb.append("|Ears:"+consultation.getEars()+"\n");}
+			if(consultation.getNose() != null) { sb.append("|Nose:"+consultation.getNose()+"\n");}
+			if(consultation.getThroat() != null) { sb.append("|Throats:"+consultation.getThroat()+"\n");}
+			if(consultation.getIlS() != null) { sb.append("|ILS:"+consultation.getIlS()+"\n");}
+			if(consultation.getNeck() != null) { sb.append("|Neck:"+consultation.getNeck()+"\n");}
+			txtExamination.setText(sb.toString());
 			if(consultation.getComplaints() != null) { txtComplaints.setText(consultation.getComplaints());}
-			if(consultation.getEars() != null) { txtEars.setText(consultation.getEars());}
-			if(consultation.getNose() != null) { txtNose.setText(consultation.getNose());}
-			if(consultation.getThroat() != null) { txtThroats.setText(consultation.getThroat());}
-			if(consultation.getIlS() != null) { txtILS.setText(consultation.getIlS());}
-			if(consultation.getNeck() != null) { txtNeck.setText(consultation.getNeck());}
+//			if(consultation.getEars() != null) { txtEars.setText(consultation.getEars());}
+//			if(consultation.getNose() != null) { txtNose.setText(consultation.getNose());}
+//			if(consultation.getThroat() != null) { txtThroats.setText(consultation.getThroat());}
+//			if(consultation.getIlS() != null) { txtILS.setText(consultation.getIlS());}
+//			if(consultation.getNeck() != null) { txtNeck.setText(consultation.getNeck());}
+			if(consultation.getOthers() != null) { txtDiagnosis.setText(consultation.getOthers());}
 			if(consultation.getDiagnosis() != null) { txtDiagnosis.setText(consultation.getDiagnosis());}
 			if(consultation.getCharge() != 0) { txtCharges.setText(String.valueOf((int)consultation.getCharge()));}
 			if(consultation.getLocation() != null) { location.setValue(consultation.getLocation().getName());}

@@ -44,6 +44,9 @@ public class Consultation{
 	
 	@Column(name = "ILS")
 	private String ilS;
+	
+	@Column(name = "OTHERS")
+	private String others;
 
 	@Column(name = "DIAGNOSIS")
 	private String diagnosis;
@@ -78,7 +81,7 @@ public class Consultation{
 	}
 
 	public Consultation(String complaints, String ears, String nose, String throat, String neck, String ilS,
-			String diagnosis, int payment) {
+			String diagnosis,String others, int payment) {
 		super();
 		this.complaints = complaints;
 		this.ears = ears;
@@ -87,6 +90,7 @@ public class Consultation{
 		this.neck = neck;
 		this.ilS = ilS;
 		this.diagnosis = diagnosis;
+		this.others = others;
 	}
 
 	public long getConsultationId() {
@@ -224,5 +228,14 @@ public class Consultation{
 	public void setCharge(double charge) {
 		this.charge = charge;
 	}
+
+	public String getOthers() {
+		return others;
+	}
+
+	public void setOthers(String others) {
+		this.others = others;
+	}
+	
 	
 }

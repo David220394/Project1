@@ -65,7 +65,7 @@ public class MedcineController  implements Initializable {
 			entries.add(medicine);
 		}
 		txtMedcine.getEntries().addAll(entries);
-		initValidation();
+		//initValidation();
 	}
 	
 	public void setConsultationMedicine(ConsultationMedicine medicine) {
@@ -79,11 +79,17 @@ public class MedcineController  implements Initializable {
 		}else {
 			freq = "0";
 		}
-		txtMedcine.setText(medicine.getMedicine().getMedicineName());
+		StringBuilder sb = new StringBuilder();
+		sb.append("Name: "+medicine.getMedicine().getMedicineName() + "|");
+		sb.append("Consumption: "+medicine.getMedicine().getConsumption() + "|");
+		sb.append("Dosage: "+medicine.getDosage() + "|");
+		sb.append("Intake: "+medicine.getIntakeTimes() + "|");
+		sb.append("Period: "+medicine.getPeriod());
+		txtMedcine.setText(sb.toString());
 		txtDosage.setText(medicine.getDosage());
 		txtNoPerDay.setText(String.valueOf(medicine.getIntakeTimes()));
 		if(medicine.getMedicine().getConsumption() != null) {
-			txtConsumption.setValue(medicine.getMedicine().getConsumption().name());
+			txtConsumption.setValue(medicine.getMedicine().getConsumption());
 		}
 		txtDays.setText(freq);
 		txtPeriod.setValue(period);

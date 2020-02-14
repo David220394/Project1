@@ -31,6 +31,7 @@ public class Converter {
 				c.getNeck(),
 				c.getIlS(),
 				c.getDiagnosis(),
+				c.getOthers(),
 				c.getCharge(),
 				c.getStartDate(),
 				c.getStartTime(),
@@ -51,7 +52,7 @@ public class Converter {
 				cM.getIntakeTimes()
 				);
 		if(cM.getMedicine().getConsumption() != null) {
-			dto.setConsumption(cM.getMedicine().getConsumption().name());
+			dto.setConsumption(cM.getMedicine().getConsumption());
 		}
 		return dto;
 	}

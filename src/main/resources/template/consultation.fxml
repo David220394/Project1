@@ -18,7 +18,7 @@
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="consultationPane" prefHeight="742.0" prefWidth="859.0" stylesheets="@../static/dark-theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.management.controller.ConsultationController">
+<AnchorPane fx:id="consultationPane" prefHeight="1575.0" prefWidth="859.0" stylesheets="@../static/dark-theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.management.controller.ConsultationController">
    <children>
       <Label fx:id="lblDateTime" text="DateTime" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="8.0">
          <font>
@@ -90,7 +90,20 @@
                         </VBox>
                      </children>
                   </HBox>
-                  <JFXTextArea fx:id="txtComplaints" labelFloat="true" prefHeight="300.0" prefWidth="200.0" promptText="Complaints" styleClass="text-field" unFocusColor="#f8f8f8">
+                  <Label text="Complaints">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <textFill>
+                        <LinearGradient endX="0.4904761904761905" endY="0.1476190476190476" startX="0.49047619047619045" startY="0.5761904761904761">
+                           <stops>
+                              <Stop color="#00d7eb" />
+                              <Stop color="#0e2bd3" offset="1.0" />
+                           </stops>
+                        </LinearGradient>
+                     </textFill>
+                  </Label>
+                  <JFXTextArea fx:id="txtComplaints" labelFloat="true" prefWidth="821.0" style="-fx-line-height: 12px; -fx-min-height: 250px;" styleClass="text-field" unFocusColor="#f8f8f8" wrapText="true">
                      <VBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </VBox.margin>
@@ -112,37 +125,47 @@
       						</LinearGradient>
       				</textFill>
                   </Label>
-                  <JFXTextArea fx:id="txtNose" labelFloat="true" prefHeight="75.0" prefWidth="250.0" promptText="Nose" styleClass="text-field" unFocusColor="WHITE">
+                  <JFXTextArea fx:id="txtExamination" labelFloat="true" prefHeight="75.0" prefWidth="250.0" style="-fx-min-height: 250px;" styleClass="text-field" text="|Nose:&#10;|Ears:&#10;|ILS:&#10;|Throats:&#10;|Neck:" unFocusColor="WHITE" wrapText="true">
                      <VBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </VBox.margin>
                   </JFXTextArea>
-                  <JFXTextArea fx:id="txtEars" labelFloat="true" prefHeight="75.0" prefWidth="250.0" promptText="Ears" styleClass="text-field" unFocusColor="WHITE">
+                  <Label text="Others">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <textFill>
+                        <LinearGradient endX="0.4904761904761905" endY="0.1476190476190476" startX="0.49047619047619045" startY="0.5761904761904761">
+                           <stops>
+                              <Stop color="#00d7eb" />
+                              <Stop color="#0e2bd3" offset="1.0" />
+                           </stops>
+                        </LinearGradient>
+                     </textFill>
+                  </Label>
+                  <JFXTextArea fx:id="txtOthers" labelFloat="true" prefHeight="300.0" prefWidth="200.0" style="-fx-min-height: 250px;" styleClass="text-field" unFocusColor="#f2f2f2" wrapText="true" />
+                  <Label text="Diagnosis">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <textFill>
+                        <LinearGradient endX="0.4904761904761905" endY="0.1476190476190476" startX="0.49047619047619045" startY="0.5761904761904761">
+                           <stops>
+                              <Stop color="#00d7eb" />
+                              <Stop color="#0e2bd3" offset="1.0" />
+                           </stops>
+                        </LinearGradient>
+                     </textFill>
+                     <VBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <JFXTextArea fx:id="txtDiagnosis" labelFloat="true" prefHeight="300.0" prefWidth="200.0" style="-fx-min-height: 250px;" styleClass="text-field" unFocusColor="#f2f2f2" wrapText="true">
                      <VBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </VBox.margin>
                   </JFXTextArea>
-                  <JFXTextArea fx:id="txtILS" labelFloat="true" prefHeight="75.0" prefWidth="250.0" promptText="ILS" styleClass="text-field" unFocusColor="WHITE">
-                     <VBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </VBox.margin>
-                  </JFXTextArea>
-                  <JFXTextArea fx:id="txtThroats" labelFloat="true" prefHeight="75.0" prefWidth="250.0" promptText="Throats" styleClass="text-field" unFocusColor="#f8f8f8">
-                     <VBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </VBox.margin>
-                  </JFXTextArea>
-                  <JFXTextArea fx:id="txtNeck" labelFloat="true" prefHeight="75.0" prefWidth="250.0" promptText="Neck" styleClass="text-field" unFocusColor="WHITE">
-                     <VBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </VBox.margin>
-                  </JFXTextArea>
-                  <JFXTextArea fx:id="txtDiagnosis" labelFloat="true" prefHeight="300.0" prefWidth="200.0" promptText="Diagnosis" styleClass="text-field" unFocusColor="#f2f2f2">
-                     <VBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </VBox.margin>
-                  </JFXTextArea>
-                  <VBox fx:id="vMedcine">
+                 <VBox fx:id="vMedcine">
                      <children>
                         <HBox spacing="10.0">
                            <VBox.margin>

@@ -58,6 +58,8 @@
 	-fx-background-color: transparent;
     -fx-text-fill: black;
     -fx-font-size : 10pt;
+    -fx-height: 110px;
+    -fx-line-height: 11px;
 	-fx-font-color : -fx-text;
     -jfx-focus-color: -fx-secondary;
     -fx-text-fill: derive(-fx-text, 20%);
